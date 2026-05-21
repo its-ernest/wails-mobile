@@ -7,37 +7,43 @@ A small Go-based mobile app starter kit with a reusable runtime core and a hello
 - `wailsmobile/` - core Go runtime package for mobile bridged apps.
 - `examples/hello-world/` - small sample app with embedded frontend, Go backend, and Android sync flow.
 - `internal/templates/android/` - Android template app where generated AARs get dumped.
-- `installer.sh` / `wailsm` - project starter that can be installed into your PATH.
+- `wailsm.sh` / `wailsm` - project starter that can be installed into your PATH.
 
 ## Install the CLI
 
 Place the compiled `wailsm` binary into a folder on your `PATH`.
+Use the command below:
 
 ```bash
-curl -L -o /usr/local/bin/wailsm https://github.com/its-ernest/wails-mobile/releases/latest/download/wailsm
+go install golang.org/x/mobile/cmd/gomobile@latest \
+gomobile init \
+go get -tool golang.org/x/mobile/cmd/gobind \
+curl -L -o /usr/local/bin/wailsm https://github.com/its-ernest/wails-mobile/releases/latest/download/wailsm \
 chmod +x /usr/local/bin/wailsm
 ```
 
 Now you can create a new app from anywhere:
 
 ```bash
-wailsm my-app
+wailsm --new my-app
 ```
 
-That command clones the starter repo and sets up the minimal native project layout.
+That command downloads a starter pre-configured Wails Mobile project files into `my-app/` directory, ready to be edited and compiled.
 
-## Local development
+The pre-configured project can be extended(adding more code), 
+when it's time to build, open `native/android/` folder in Android Studio and click `Build`.
 
-If you want to work from source, clone this repo and use the example sync flow:
+## Editing and Extending the project
+
+Suppose you add more code for your mobile app, you can ensure the build is refreshed to reflect all your changes with the command below:
 
 ```bash
-git clone https://github.com/its-ernest/wails-mobile.git
-cd wails-mobile/examples/hello-world
-chmod +x sync.sh
-./sync.sh
+wailsm --refresh
 ```
 
-The example sync script reads `config.ini`, builds the AAR with `gomobile bind`, and copies the generated library into `internal/templates/android/app/libs`.
+After that you can click on `Build app` from Android studio to build your app
+
+The above command sync script reads `config.ini`, builds the AAR with `gomobile bind`, and copies the generated library into `native/android/app/libs`.
 
 ## Configuring sync
 
@@ -57,6 +63,7 @@ Edit `examples/hello-world/config.ini` to change:
 
 ## Notes
 
-- The repo is designed so the hello-world example can compile against the core runtime in the same repository.
-- Use `examples/hello-world/sync.sh` to keep the Android template libraries up to date.
-
+- The repo is in initial stages
+- Improvement (More packages expected)
+- I welcome every contribution to make this project stable
+- Code cleanup required

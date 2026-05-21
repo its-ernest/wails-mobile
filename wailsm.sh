@@ -85,7 +85,7 @@ case "$1" in
     --new)
         create_new_project "$2"
         ;;
-    --refresh)
+    refresh)
         execute_refresh
         ;;
     -h|--help)

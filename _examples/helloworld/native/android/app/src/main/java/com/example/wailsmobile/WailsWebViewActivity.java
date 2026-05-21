@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
-import helloworld.Helloworld;
+import wailsmobile.WailsMobile;
 
 public class WailsWebViewActivity extends AppCompatActivity {
 
@@ -24,7 +24,7 @@ public class WailsWebViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String initResult = Helloworld.startApplication();
+        String initResult = WailsMobile.startApplication();
         Log.d("WailsMobile", "Go backend init result: " + initResult);
 
         mWebView = new WebView(this);
@@ -36,12 +36,12 @@ public class WailsWebViewActivity extends AppCompatActivity {
         mWebView.addJavascriptInterface(new Object() {
             @JavascriptInterface
             public String callGo(String methodKey, String jsonArgsPayload) {
-                return Helloworld.handleMessageFromFrontend(methodKey, jsonArgsPayload);
+                return WailsMobile.handleMessageFromFrontend(methodKey, jsonArgsPayload);
             }
 
             @JavascriptInterface
             public String callNative(String methodKey, String jsonArgsPayload) {
-                return Helloworld.handleNativeAction(methodKey, jsonArgsPayload);
+                return WailsMobile.handleNativeAction(methodKey, jsonArgsPayload);
             }
         }, "WailsBind");
 
@@ -53,8 +53,8 @@ public class WailsWebViewActivity extends AppCompatActivity {
                     urlPath = "index.html";
                 }
 
-                byte[] fileBytes = Helloworld.requestAssetBytes(urlPath);
-                String mimeType = Helloworld.requestAssetMime(urlPath);
+                byte[] fileBytes = WailsMobile.requestAssetBytes(urlPath);
+                String mimeType = WailsMobile.requestAssetMime(urlPath);
                 if (mimeType == null || mimeType.isEmpty()) {
                     mimeType = "text/plain";
                 }
@@ -67,7 +67,7 @@ public class WailsWebViewActivity extends AppCompatActivity {
             }
         });
 
-        String html = new String(Helloworld.requestAssetBytes("index.html"), StandardCharsets.UTF_8);
+        String html = new String(WailsMobile.requestAssetBytes("index.html"), StandardCharsets.UTF_8);
         mWebView.loadDataWithBaseURL("https://wails.local/", html, "text/html", "UTF-8", null);
     }
 }
