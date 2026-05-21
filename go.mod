@@ -1,6 +1,6 @@
 module github.com/its-ernest/wails-mobile
 
-go 1.26.3
+go 1.24
 
 require (
 	golang.org/x/mobile v0.0.0-20260520154334-0e4426e1883d // indirect
