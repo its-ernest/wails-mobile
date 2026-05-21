@@ -1,0 +1,26 @@
+# Go build artifacts
+bin/
+pkg/
+*.exe
+*.test
+*.out
+/vendor/
+
+# IDE/editor
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Android / Gradle build artifacts
+**/build/
+**/.gradle/
+**/local.properties
+**/captures/
+
+/_examples/
+# Generated mobile library outputs
+/internal/
+/internal/templates/android/app/libs/*.aar
+/internal/templates/android/app/libs/*-sources.jar
+/internal/templates/android/app/libs/**/*.so
