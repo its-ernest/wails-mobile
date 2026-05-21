@@ -4,6 +4,8 @@ pkg/
 *.exe
 *.test
 *.out
+*.jar
+*.aar
 /vendor/
 
 # IDE/editor
@@ -18,7 +20,7 @@ pkg/
 **/local.properties
 **/captures/
 
-/_examples/
+#/_examples/
 # Generated mobile library outputs
 /internal/
 /internal/templates/android/app/libs/*.aar
