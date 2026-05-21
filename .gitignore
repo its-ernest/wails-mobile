@@ -21,7 +21,7 @@ pkg/
 **/local.properties
 **/captures/
 
-#/_examples/
+/_examples/notes-app/
 # Generated mobile library outputs
 /internal/
 /internal/templates/android/app/libs/*.aar

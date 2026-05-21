@@ -17,7 +17,7 @@ Place the compiled `wailsm` binary into a folder on your `PATH`.
 Use the command below:
 
 ```bash
-sudo curl -L -o /usr/local/bin/wailsm https://github.com/its-ernest/wails-mobile/releases/latest/download/wailsm && \
+sudo curl -L -H "Cache-Control: no-cache" -o /usr/local/bin/wailsm https://github.com/its-ernest/wails-mobile/releases/latest/download/wailsm && \
 sudo chmod +x /usr/local/bin/wailsm
 ```
 
@@ -59,6 +59,12 @@ Edit `examples/hello-world/config.ini` to change:
 - `gomobile` installed
 - Android SDK + NDK installed for `gomobile bind`
 - `git`, `curl`, `unzip` for the installer flow
+
+## To uninstall
+
+```bash
+sudo rm -rf /usr/local/bin/wailsm
+```
 
 ## Notes
 
