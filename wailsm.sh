@@ -65,7 +65,7 @@ create_new_project() {
     cd "$target_dir"
     go install golang.org/x/mobile/cmd/gomobile@latest && \
     gomobile init && \
-    go get -tool golang.org/x/mobile/cmd/gobind &&
+    go get -tool golang.org/x/mobile/cmd/gobind
 }
 
 execute_refresh() {
