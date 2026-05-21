@@ -2,6 +2,7 @@
 bin/
 pkg/
 *.exe
+*.zip
 *.test
 *.out
 *.jar

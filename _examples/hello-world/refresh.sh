@@ -29,11 +29,11 @@ GOMOBILE_TARGET="${GOMOBILE_TARGET:-android/arm64}"
 ANDROID_API="${ANDROID_API:-23}"
 PACKAGE_PATH="${PACKAGE_PATH:-github.com/its-ernest/wails-mobile/examples/hello-world}"
 AAR_NAME="${AAR_NAME:-helloworld.aar}"
-OUTPUT_DIR="${OUTPUT_DIR:-internal/templates/android/app/libs}"
+OUTPUT_DIR="${OUTPUT_DIR:-native/android/app/libs}"
 CLEAN_OUTPUT="${CLEAN_OUTPUT:-true}"
 
 OUTPUT_PATH="$REPO_ROOT/$OUTPUT_DIR"
-BUILD_GRADLE="$REPO_ROOT/internal/templates/android/app/build.gradle"
+BUILD_GRADLE="$REPO_ROOT/native/android/app/build.gradle"
 
 command -v gomobile >/dev/null 2>&1 || {
   echo "gomobile not found. Install it first: go install golang.org/x/mobile/cmd/gomobile@latest"
@@ -69,3 +69,5 @@ gomobile bind -target "$GOMOBILE_TARGET" -androidapi "$ANDROID_API" -o "$OUTPUT_
 
 echo "Sync complete. Generated AAR and sources jar are in: $OUTPUT_PATH"
 ls -1 "$OUTPUT_PATH"
+
+echo "Open 'native/android/' folder in Android studio and click on Build"
