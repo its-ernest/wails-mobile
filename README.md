@@ -15,11 +15,8 @@ Place the compiled `wailsm` binary into a folder on your `PATH`.
 Use the command below:
 
 ```bash
-go install golang.org/x/mobile/cmd/gomobile@latest \
-gomobile init \
-go get -tool golang.org/x/mobile/cmd/gobind \
-curl -L -o /usr/local/bin/wailsm https://github.com/its-ernest/wails-mobile/releases/latest/download/wailsm \
-chmod +x /usr/local/bin/wailsm
+sudo curl -L -o /usr/local/bin/wailsm https://github.com/its-ernest/wails-mobile/releases/latest/download/wailsm && \
+sudo chmod +x /usr/local/bin/wailsm
 ```
 
 Now you can create a new app from anywhere:

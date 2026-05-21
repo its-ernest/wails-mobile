@@ -4,8 +4,8 @@ A minimal mobile Go example packaged for Android using `gomobile bind`.
 
 ## Structure
 
-- `main.go` — app startup and runtime registration
-- `hello.go` — backend service with `HelloService.SayHello`
+- `enginego` — app startup and runtime registration
+- `main.go` — backend service with `HelloService.SayHello`
 - `frontend/` — embedded web UI assets
 - `android/` — local Android build helper scripts
 

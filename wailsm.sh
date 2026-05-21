@@ -60,6 +60,12 @@ create_new_project() {
 
     rm "$target_dir/$RELEASE_ASSET"
     echo "=== Project Created Successfully inside '${target_dir}' ==="
+
+    echo "=== Installing Go mobile bindings ==="
+    cd "$target_dir"
+    go install golang.org/x/mobile/cmd/gomobile@latest && \
+    gomobile init && \
+    go get -tool golang.org/x/mobile/cmd/gobind && \
 }
 
 execute_refresh() {
