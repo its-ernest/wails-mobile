@@ -1,12 +1,12 @@
-package helloworld
+package wailsmobile
 
-type HelloService struct{}
+type AppService struct{}
 
-func NewHelloService() *HelloService {
-	return &HelloService{}
+func NewService() *AppService {
+	return &AppService{}
 }
 
-func (s *HelloService) SayHello(name string) (map[string]string, error) {
+func (s *AppService) SayHello(name string) (map[string]string, error) {
 	if name == "" {
 		name = "World"
 	}

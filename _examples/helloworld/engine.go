@@ -1,11 +1,11 @@
-package helloworld
+package wailsmobile
 
 import (
 	"embed"
 	"encoding/json"
 	"fmt"
 
-	"github.com/its-ernest/wails-mobile/wailsmobile"
+	"github.com/its-ernest/wails-mobile/wails"
 )
 
 //go:embed frontend/*
@@ -13,15 +13,15 @@ var assets embed.FS
 
 // StartApplication initializes the mobile backend runtime from Android.
 func StartApplication() string {
-	helloService := NewHelloService()
+	helloService := NewService()
 
-	app := wailsmobile.NewApplication(wailsmobile.Options{
+	app := wails.NewApplication(wails.Options{
 		Name:   "HelloWorld",
 		Assets: assets,
 		Bind: []interface{}{
 			helloService,
 		},
-		OnStart: func(app *wailsmobile.Application) error {
+		OnStart: func(app *wails.Application) error {
 			app.RegisterNativeMethod("Device.Ping", func(args []json.RawMessage) (interface{}, error) {
 				return map[string]string{"status": "alive"}, nil
 			})
@@ -37,17 +37,17 @@ func StartApplication() string {
 }
 
 func HandleMessageFromFrontend(methodKey string, jsonArgsPayload string) string {
-	return wailsmobile.HandleMessageFromFrontend(methodKey, jsonArgsPayload)
+	return wails.HandleMessageFromFrontend(methodKey, jsonArgsPayload)
 }
 
 func HandleNativeAction(methodKey string, jsonArgsPayload string) string {
-	return wailsmobile.HandleNativeAction(methodKey, jsonArgsPayload)
+	return wails.HandleNativeAction(methodKey, jsonArgsPayload)
 }
 
 func RequestAssetBytes(urlPath string) []byte {
-	return wailsmobile.NewMobileBridge().RequestAssetBytes(urlPath)
+	return wails.NewMobileBridge().RequestAssetBytes(urlPath)
 }
 
 func RequestAssetMime(urlPath string) string {
-	return wailsmobile.NewMobileBridge().RequestAssetMime(urlPath)
+	return wails.NewMobileBridge().RequestAssetMime(urlPath)
 }

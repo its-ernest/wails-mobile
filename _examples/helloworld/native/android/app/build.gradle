@@ -39,6 +39,8 @@ dependencies {
     androidTestImplementation libs.espresso.core
     androidTestImplementation libs.ext.junit
 
+    implementation "androidx.webkit:webkit:1.12.0"
+
     // Automatically compiles and links local flat archive dependencies
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 }

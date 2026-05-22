@@ -16,7 +16,7 @@ rm -f "$OUTPUT_PATH"/*.aar "$OUTPUT_PATH"/*-sources.jar
 cd "$SCRIPT_DIR"
 
 echo "Building wailsmobile.aar..."
-gomobile bind -target="android/arm64" -androidapi="21" -o "$OUTPUT_PATH/wailsmobile.aar" .
+gomobile bind -target="android/arm64" -androidapi="21" -javapkg="wailsmobile" -o "$OUTPUT_PATH/wailsmobile.aar" .
 
 echo "Done. Artifacts in $OUTPUT_PATH:"
 echo

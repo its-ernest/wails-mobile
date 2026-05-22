@@ -1,4 +1,4 @@
-package wailsmobile
+package wails
 
 import (
 	"fmt"
