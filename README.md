@@ -15,7 +15,8 @@ Wails Mobile is a port of Go v3 implementation to support mobile devies
 
 ## Install the CLI
 
-Place the compiled `wailsm` binary into a folder on your `PATH`.
+To install  and build apps with `wails-mobile`, use the CLI helper by running the command below:
+Download size is below: `700 kb`
 Use the command below:
 
 ```bash
