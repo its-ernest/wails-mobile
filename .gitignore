@@ -9,6 +9,8 @@ pkg/
 *.aar
 /vendor/
 
+wailsm
+
 # IDE/editor
 .idea/
 *.iml

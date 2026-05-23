@@ -6,10 +6,12 @@ A small Go-based mobile app starter kit with a reusable runtime core and a hello
 
 ## Overview
 
-- `wailsmobile/` - core Go runtime package for mobile bridged apps.
-- `examples/hello-world/` - small sample app with embedded frontend, Go backend, and Android sync flow.
-- `internal/templates/android/` - Android template app where generated AARs get dumped.
-- `wailsm.sh` / `wailsm` - project starter that can be installed into your PATH.
+- `wails/` - core Go runtime package for mobile bridged apps.
+- `_examples/helloworld/` - small sample app with embedded frontend, Go backend, and Android sync flow.
+- `native/android/` - Android app template app where generated AARs get dumped.
+- `wailsm.sh` / `wailsm` - project starter and CLI automated helper that can be installed into your PATH.
+
+---
 
 ## Install the CLI
 
@@ -24,7 +26,7 @@ sudo chmod +x /usr/local/bin/wailsm
 Now you can create a new app from anywhere:
 
 ```bash
-wailsm --new my-app
+wailsm --new my-new-app
 ```
 
 That command downloads a starter pre-configured Wails Mobile project files into `my-app/` directory, ready to be edited and compiled.
@@ -32,27 +34,46 @@ That command downloads a starter pre-configured Wails Mobile project files into 
 The pre-configured project can be extended(adding more code), 
 when it's time to build, open `native/android/` folder in Android Studio and click `Build`.
 
-## Editing and Extending the project
+--- 
 
-Suppose you add more code for your mobile app, you can ensure the build is refreshed to reflect all your changes with the command below:
+## WailsMobile App Structure
+
+- `engine.go` — app startup and runtime registration, not meant to be tampered unless you are sure
+- `main.go` — backend service with `AppService.SayHello`
+- `frontend/` — embedded web UI assets
+- `native/` — this folder contains the standard Android Studio or XCode app project
+
+## Refresh or Sync workflow
+
+After editing or write your Go code or frontend, you must refresh or sync first to produce native bindings.
+
+You can optionally update `android.ini` to control architecture, Android API, output path, and template SDK values. By default, this works for Android 5 up to latest Android 17.
 
 ```bash
-wailsm --refresh
+wailsm --refresh android # or ios
 ```
 
-After that you can click on `Build app` from Android studio to build your app
+The script will:
 
-The above command sync script reads `config.ini`, builds the AAR with `gomobile bind`, and copies the generated library into `native/android/app/libs`.
+- build the example AAR with `gomobile bind`
+- dump the generated `.aar` and source `.jar` into `native/android/app/libs`
 
-## Configuring sync
 
-Edit `examples/hello-world/config.ini` to change:
+## Building the App
 
-- `gomobile_target` - Android ABI(s) to build
-- `androidapi` - Android API level for gomobile
-- `aar_name` - output AAR file name
-- `template_min_sdk` / `template_target_sdk` - values patched into the Android template
+Once again: don't forget after editing or write your Go code, you must refresh or sync first to produce native bindings.
 
+Now open the project in Android Studio or XCode.
+
+Where the resulting projects are found:
+ - Final Android Studio project: `native/android/`
+ - Final XCode: `native/...`
+
+## Notes
+
+- The WebView frontend uses `WailsBind.callGo(...)` to invoke the Go backend.
+- Currently, `wails-mobile` is stable enough for Android builds. If you care to get support for iOS sooner, contribute by translating the Java project into Swift project. 
+- The core bridge in Go is cross-platform(`Android` and `iOS`). No writing of JNI. No writing of *C* code and headers. 
 ## Requirements
 
 - Go 1.24+
@@ -70,5 +91,6 @@ sudo rm -rf /usr/local/bin/wailsm
 
 - The repo is in initial stages
 - Improvement (More packages expected)
+- Contributing to Wails Mobile for iOS accepted. (`Swift` project in need)
 - I welcome every contribution to make this project stable
-- Code cleanup required
+- Code improvement accepted

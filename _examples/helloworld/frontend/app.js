@@ -1,34 +1,56 @@
-async function CallGoBackend(methodName, ...args) {
-    if (!window.WailsBind) {
-        throw new Error('Native framework container bridge not found.');
-    }
-
-    const jsonArgs = JSON.stringify(args);
-    const rawResponse = window.WailsBind.callGo(methodName, jsonArgs);
-    const parsed = JSON.parse(rawResponse);
-
-    if (parsed.error) {
-        throw new Error(parsed.error);
-    }
-
-    return parsed.result;
-}
-
-async function loadHelloWorld() {
-    const nameInput = document.getElementById('name');
-    const output = document.getElementById('output');
-
-    output.textContent = 'Calling Go backend...';
-
-    try {
-        const result = await CallGoBackend('HelloService.SayHello', nameInput.value.trim());
-        output.textContent = result.message;
-    } catch (err) {
-        output.textContent = `Error: ${err.message}`;
-        console.error('Bridge error:', err);
-    }
+/**
+ * app.js - User Application Logic
+ */
+function updateOutput(text) {
+    document.getElementById('output').textContent = text;
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('send').addEventListener('click', loadHelloWorld);
+    // 1. Standard Go Call
+    document.getElementById('send').addEventListener('click', async () => {
+        const name = document.getElementById('name').value;
+        try {
+            const result = await Wails.CallGo('AppService.SayHello', name);
+            updateOutput(result.message);
+        } catch (err) {
+            updateOutput(`Error: ${err.message}`);
+        }
+    });
+
+    // 2. Permission Plugin (Managed by Go)
+    document.getElementById('check-perm').addEventListener('click', async () => {
+        try {
+            const result = await Wails.CallGo('PermissionPlugin.Check', "android.permission.CAMERA");
+            // Go returns the raw string from Java
+            const parsed = JSON.parse(result);
+            updateOutput(`Camera Status: ${parsed.status}`);
+        } catch (err) {
+            updateOutput(`Error: ${err.message}`);
+        }
+    });
+
+    document.getElementById('request-perm').addEventListener('click', async () => {
+        try {
+            await Wails.CallGo('PermissionPlugin.Request', "android.permission.CAMERA");
+            updateOutput("Requested camera... check the system dialog.");
+        } catch (err) {
+            updateOutput(`Error: ${err.message}`);
+        }
+    });
+
+    // 3. Native Go Method
+    document.getElementById('ping').addEventListener('click', async () => {
+        try {
+            const result = await Wails.CallGo('AppService.Ping');
+            updateOutput(`Bridge Ping: ${result.status}`);
+        } catch (err) {
+            updateOutput(`Error: ${err.message}`);
+        }
+    });
+
+    // 4. Event Listener
+    Wails.on('permissions:changed', (data) => {
+        console.log("EVENT RECEIVED:", data);
+        updateOutput(`ASYNC EVENT: Permission for ${data.permission} was ${data.granted ? 'GRANTED' : 'DENIED'}`);
+    });
 });

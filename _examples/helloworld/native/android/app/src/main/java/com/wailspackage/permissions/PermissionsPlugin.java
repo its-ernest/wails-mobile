@@ -15,6 +15,10 @@ import org.json.JSONObject;
 
 import wailsmobile.Wailsmobile;
 
+/**
+ * PermissionsPlugin provides access to the Android runtime permission system.
+ * It is managed by the Go layer.
+ */
 public class PermissionsPlugin implements WailsPlugin {
     private AppCompatActivity mActivity;
     private static final int PERMISSION_REQ_CODE = 9911;
@@ -28,7 +32,6 @@ public class PermissionsPlugin implements WailsPlugin {
     @Override
     public String handleAction(String action, String jsonArgsPayload) {
         if ("check".equals(action)) {
-            // Parse jsonArgsPayload to find out which permission to check
             String perm = parsePermissionFromJson(jsonArgsPayload);
             int result = ContextCompat.checkSelfPermission(mActivity, perm);
             return result == PackageManager.PERMISSION_GRANTED ? "{\"status\":\"granted\"}" : "{\"status\":\"denied\"}";
@@ -49,13 +52,13 @@ public class PermissionsPlugin implements WailsPlugin {
             boolean granted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
             String permission = permissions[0];
 
-            // Native callback: async pass the permission status straight back into Go!
-            // We use a domain-prefixed event name so Go knows how to route it.
             JSONObject result = new JSONObject();
             try {
                 result.put("permission", permission);
                 result.put("granted", granted);
-                WailsMobile.handleMessageFromFrontend("permissions:result", result.toString());
+                // Send result back to Go via Native Action
+                String payload = "[" + result.toString() + "]";
+                Wailsmobile.handleNativeAction("permissions:result", payload);
             } catch (JSONException e) {
                 Log.e("PermissionsPlugin", "Error creating result JSON", e);
             }

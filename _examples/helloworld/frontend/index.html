@@ -58,8 +58,16 @@
         <input id="name" type="text" placeholder="Type a name" value="Wails" />
         <button id="send">Say Hello</button>
 
+        <div style="margin-top: 2rem; border-top: 1px solid #334155; padding-top: 1rem;">
+            <h3>Native Features</h3>
+            <button id="check-perm" style="background: #3b82f6; color: white;">Check Camera</button>
+            <button id="request-perm" style="background: #8b5cf6; color: white;">Request Camera</button>
+            <button id="ping" style="background: #64748b; color: white;">Ping Native Bridge</button>
+        </div>
+
         <pre id="output">Result will show here.</pre>
     </div>
+    <script src="wails.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

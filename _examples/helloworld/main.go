@@ -2,7 +2,7 @@ package wailsmobile
 
 type AppService struct{}
 
-func NewService() *AppService {
+func NewAppService() *AppService {
 	return &AppService{}
 }
 
@@ -13,5 +13,11 @@ func (s *AppService) SayHello(name string) (map[string]string, error) {
 
 	return map[string]string{
 		"message": "Hello, " + name + "!",
+	}, nil
+}
+
+func (s *AppService) Ping() (map[string]string, error) {
+	return map[string]string{
+		"status": "alive",
 	}, nil
 }

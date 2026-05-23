@@ -1,3 +1,6 @@
+// Package wails provides the core runtime for Wails Mobile applications.
+// It manages the application lifecycle, service binding, and the bridge between
+// Go and the native mobile platform.
 package wails
 
 import (
@@ -8,16 +11,22 @@ import (
 
 // Options defines the application configuration following the Wails v3 pattern.
 type Options struct {
+	// Name is the name of the application.
 	Name    string
+	// Assets is the embedded filesystem containing the frontend assets.
 	Assets  embed.FS
+	// Bind is a slice of struct instances to export to the frontend.
 	Bind    []interface{}
+	// OnStart is a callback triggered when the application has initialized.
 	OnStart func(app *Application) error
 }
 
+// WindowOptions defines initial window configuration.
 type WindowOptions struct {
 	Title string
 }
 
+// Window represents the application window (WebView container).
 type Window struct {
 	Options WindowOptions
 }
@@ -25,7 +34,7 @@ type Window struct {
 type nativeMethod func([]json.RawMessage) (interface{}, error)
 
 // Application represents the global lifecycle state container.
-// We make the methods map unexported (lowercase) so gobind ignores its reflection types.
+// It manages the communication between the Go backend and the native mobile environment.
 type Application struct {
 	Name          string
 	Window        *Window
@@ -35,6 +44,7 @@ type Application struct {
 	options       Options
 }
 
+// NewApplication creates a new instance of the Wails Mobile application.
 func NewApplication(options Options) *Application {
 	return &Application{
 		Name:          options.Name,
@@ -46,11 +56,13 @@ func NewApplication(options Options) *Application {
 	}
 }
 
+// NewWindow configures and returns the application window.
 func (a *Application) NewWindow(opts WindowOptions) *Window {
 	a.Window.Options = opts
 	return a.Window
 }
 
+// Run starts the application engine and initializes bindings.
 func (a *Application) Run() error {
 	fmt.Printf("[%s] Initializing wails-mobile core engine...\n", a.Name)
 	if err := a.parseBindings(); err != nil {
@@ -70,6 +82,8 @@ func (a *Application) Run() error {
 	return nil
 }
 
+// RegisterNativeMethod registers a Go function as a "Native Method" that can be called
+// directly from the Java/Objective-C layer using the HandleNativeAction bridge.
 func (a *Application) RegisterNativeMethod(methodKey string, fn func([]json.RawMessage) (interface{}, error)) {
 	if a.nativeMethods == nil {
 		a.nativeMethods = make(map[string]nativeMethod)
@@ -77,6 +91,7 @@ func (a *Application) RegisterNativeMethod(methodKey string, fn func([]json.RawM
 	a.nativeMethods[methodKey] = fn
 }
 
+// InvokeNativeCall executes a previously registered native method.
 func (a *Application) InvokeNativeCall(methodKey string, rawArgs []json.RawMessage) (interface{}, error) {
 	if fn, exists := a.nativeMethods[methodKey]; exists {
 		return fn(rawArgs)

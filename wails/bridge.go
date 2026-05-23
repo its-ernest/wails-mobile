@@ -7,6 +7,27 @@ import (
 
 var globalAppInstance *Application
 
+// NativeCallHandler is an interface implemented by the mobile platform (Java/Obj-C)
+// to handle calls originating from the Go layer.
+type NativeCallHandler interface {
+	OnNativeCall(method string, args string) string
+}
+
+var globalNativeHandler NativeCallHandler
+
+// SetNativeCallHandler registers the platform-specific handler.
+func SetNativeCallHandler(handler NativeCallHandler) {
+	globalNativeHandler = handler
+}
+
+// CallNativePlatform calls the registered native handler from Go.
+func CallNativePlatform(method string, args string) string {
+	if globalNativeHandler == nil {
+		return `{"error": "No native handler registered"}`
+	}
+	return globalNativeHandler.OnNativeCall(method, args)
+}
+
 func SetGlobalApp(app *Application) {
 	globalAppInstance = app
 }
@@ -38,6 +59,13 @@ func (b *MobileBridge) CallGoBackend(methodKey string, jsonArgsPayload string) s
 		"result": result,
 	})
 	return string(responsePayload)
+}
+
+func (b *MobileBridge) PollNativeEvent() string {
+	if globalAppInstance == nil {
+		return ""
+	}
+	return globalAppInstance.Events.PollNativeEvent()
 }
 
 // HandleMessageFromFrontend is a package-level helper exposed to gomobile-generated Java wrappers.

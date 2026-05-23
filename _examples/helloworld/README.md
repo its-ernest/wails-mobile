@@ -4,41 +4,40 @@ A minimal mobile Go example packaged for Android using `gomobile bind`.
 
 ## Structure
 
-- `enginego` — app startup and runtime registration
-- `main.go` — backend service with `HelloService.SayHello`
+- `engine.go` — app startup and runtime registration, not meant to be tampered unless you are sure
+- `main.go` — backend service with `AppService.SayHello`
 - `frontend/` — embedded web UI assets
 - `android/` — local Android build helper scripts
 
-## Sync workflow
+## Refresh or Sync workflow
 
-Create or update `config.ini` to control architecture, Android API, output path, and template SDK values.
+After editing or write your Go code, you must refresh or sync first to produce native bindings.
+
+Update `android.ini` to control architecture, Android API, output path, and template SDK values.
 
 ```bash
-cd examples/hello-world
-chmod +x sync.sh
-./sync.sh
+wailsm --refresh android # or ios
+
 ```
 
 The script will:
 
 - build the example AAR with `gomobile bind`
-- dump the generated `.aar` and source `.jar` into `internal/templates/android/app/libs`
-- optionally patch `minSdk` and `targetSdk` in the Android template
+- dump the generated `.aar` and source `.jar` into `native/android/app/libs`
 
-## Build
 
-```bash
-cd examples/hello-world/android
-chmod +x gen-aars.sh build-android.sh
-./gen-aars.sh
-```
+## Building the App
 
-This generates:
+Once again: don't forget after editing or write your Go code, you must refresh or sync first to produce native bindings.
 
-- `app/libs/wailsmobile.aar`
-- `app/libs/helloworld.aar`
+Now open the project in Android Studio or XCode.
+
+Where the resulting projects are found:
+ - Final Android Studio project: `native/android/`
+ - Final XCode: `native/...`
 
 ## Notes
 
-- The generated AARs can be copied into `internal/templates/android/app/libs/` for Android Studio sync.
 - The WebView frontend uses `WailsBind.callGo(...)` to invoke the Go backend.
+- Currently, `wails-mobile` is stable enough for Android builds. If you care to get support for iOS sooner, contribute by translating the Java project into Swift project. 
+- The core bridge in Go is cross-platform(`Android` and `iOS`). No writing of JNI. No writing of *C* code and headers. 
