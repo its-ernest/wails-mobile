@@ -1,4 +1,4 @@
-# Wails Mobile
+# Wails Mobile (Stable Android Support)
 
 **Automation scripts currently works for Linux systems**
 
