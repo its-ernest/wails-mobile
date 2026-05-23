@@ -2,7 +2,7 @@
 
 **Automation scripts currently works for Linux systems**
 
-A small Go-based mobile app starter kit with a reusable runtime core and a hello-world Android template.
+Wails Mobile is a port of Go v3 implementation to support mobile devies
 
 ## Overview
 
