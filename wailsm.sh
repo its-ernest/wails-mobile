@@ -7,7 +7,8 @@ set -e
 REPO_URL="https://github.com/its-ernest/wails-mobile" 
 VERSION="v1.0.0"
 RELEASE_ASSET="template.zip" 
-DOWNLOAD_URL="${REPO_URL}/releases/download/${VERSION}/${RELEASE_ASSET}"
+#DOWNLOAD_URL="${REPO_URL}/releases/download/${VERSION}/${RELEASE_ASSET}"
+DOWNLOAD_URL="${REPO_URL}/releases/latest/download/${RELEASE_ASSET}"
 
 show_usage() {
     echo "Wails Mobile Toolchain CLI (wailsm)" >&2
