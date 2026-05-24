@@ -38,6 +38,14 @@ when it's time to build, open `native/android/` folder in Android Studio and cli
 
 --- 
 
+## Requirements
+
+- Go 1.24+
+- Android SDK + NDK installed for `gomobile bind`
+- `git`, `curl`, `unzip` for the installer flow
+
+---
+
 ## WailsMobile App Structure
 
 - `engine.go` — app startup and runtime registration, not meant to be tampered unless you are sure
@@ -71,17 +79,42 @@ Where the resulting projects are found:
  - Final Android Studio project: `native/android/`
  - Final XCode: `native/...`
 
-## Notes
 
-- The WebView frontend uses `WailsBind.callGo(...)` to invoke the Go backend.
-- Currently, `wails-mobile` is stable enough for Android builds. If you care to get support for iOS sooner, contribute by translating the Java project into Swift project. 
-- The core bridge in Go is cross-platform(`Android` and `iOS`). No writing of JNI. No writing of *C* code and headers. 
-## Requirements
+## Adding external Plugins
 
-- Go 1.24+
-- `gomobile` installed
-- Android SDK + NDK installed for `gomobile bind`
-- `git`, `curl`, `unzip` for the installer flow
+External plugins are just external Go packages, with the directory structured in such a way Wails Mobile CLI can realize it contains some native platform code. 
+
+Sample Plugin structure:
+
+```bash
+somePlugin/
+    - android/
+        - com/.... #example package name
+    - ios/
+        - ...#support coming soon
+    
+    - go.mod
+    - other go package files
+```
+
+You can add a plugin with:
+```bash
+wailsm --add github.com/<handle>/<plugin> # uses `go get...` under the hood
+```
+
+## Removing packages
+You can remove a plugin from Wails mobile with:
+```bash
+wailsm --remove github.com/<handle>/<plugin>
+```
+
+## Writing custom plugins or Native code
+
+You can design an external plugin to be integrated into Wails Mobile application, or even write some app-specific native Java or Swift code and call it from Go. 
+
+Instructions on achieving this goal is wired in `[PLUGINS.md](PLUGINS.md)`
+
+---
 
 ## To uninstall
 
@@ -89,10 +122,9 @@ Where the resulting projects are found:
 sudo rm -rf /usr/local/bin/wailsm
 ```
 
+
 ## Notes
 
-- The repo is in initial stages
-- Improvement (More packages expected)
-- Contributing to Wails Mobile for iOS accepted. (`Swift` project in need)
-- I welcome every contribution to make this project stable
-- Code improvement accepted
+- The WebView frontend uses `WailsBind.callGo(...)` to invoke the Go backend.
+- Currently, `wails-mobile` is stable enough for Android builds. If you care to get support for iOS sooner, contribute by translating the Java project into Swift project. 
+- The core bridge in Go is cross-platform(`Android` and `iOS`). No writing of JNI. No writing of *C* code and headers. 

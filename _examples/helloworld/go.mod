@@ -1,10 +1,8 @@
-module github.com/its-ernest/wails-mobile/_examples/wailsmobile
+module helloworld
 
 go 1.26.3
 
-require (
-	github.com/its-ernest/wails-mobile v1.0.4
-)
+require github.com/its-ernest/wails-mobile v1.0.5
 
 require (
 	golang.org/x/mobile v0.0.0-20260520154334-0e4426e1883d // indirect
