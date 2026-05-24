@@ -3,16 +3,25 @@ package wailsmobile
 import (
 	"embed"
 	"fmt"
+	"time"
 
+	"github.com/its-ernest/wails-mobile/plugins/logger"
+	"github.com/its-ernest/wails-mobile/plugins/notification"
+	"github.com/its-ernest/wails-mobile/plugins/permission"
+	"github.com/its-ernest/wails-mobile/plugins/workmanager"
 	"github.com/its-ernest/wails-mobile/wails"
-	"github.com/its-ernest/wails-mobile/wails/permission"
 )
 
 //go:embed frontend/*
 var assets embed.FS
 
-// permPlugin is a global instance of the permission plugin to be initialized on app start
-var permPlugin = permission.NewPlugin()
+// Global plugin instances
+var (
+	permPlugin   = permission.NewPlugin()
+	wmPlugin     = workmanager.NewPlugin()
+	notifyPlugin = notification.NewPlugin()
+	log          = logger.NewPlugin("HelloWorld")
+)
 
 // NativeCallHandler is an interface that Java can implement to handle calls from Go.
 // Defining it here ensures gomobile generates it in the 'wailsmobile' Java package.
@@ -35,18 +44,51 @@ func StartApplication() string {
 		Bind: []interface{}{
 			helloService,
 			permPlugin,
+			wmPlugin,
+			notifyPlugin,
 		},
 		OnStart: func(app *wails.Application) error {
-			// Initialize the permission plugin with the application context
+			// Initialize plugins
+			if err := log.Init(app); err != nil {
+				return err
+			}
 			if err := permPlugin.Init(app); err != nil {
 				return err
 			}
+			if err := wmPlugin.Init(app); err != nil {
+				return err
+			}
+			if err := notifyPlugin.Init(app); err != nil {
+				return err
+			}
+
+			log.Info("Go Application started!")
+
+			// Example: Register a background task
+			wmPlugin.RegisterTask("sync_analytics", func() error {
+				log.Info("Background task sync_analytics invoked")
+				notifyPlugin.Post(notification.Notification{
+					ID:         100,
+					Title:      "Periodic Post",
+					Body:       "Hello from Wails!",
+					Importance: notification.ImportanceHigh,
+				})
+				return nil
+			})
+
+			time.AfterFunc(30*time.Second, func() {
+				log.Debug("Enqueuing periodic background work...")
+				wmPlugin.EnqueuePeriodic("sync_analytics", 15, &workmanager.Constraints{
+					NetworkType: workmanager.NetworkNotRequired,
+				})
+			})
 
 			return nil
 		},
 	})
 
 	if err := app.Run(); err != nil {
+		log.Error("Application failed to run: %v", err)
 		return fmt.Sprintf(`{"error":"%s"}`, err.Error())
 	}
 

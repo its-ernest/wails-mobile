@@ -1,115 +1,89 @@
-# Writing Custom Plugins for Wails Mobile
+# Wails Mobile Plugin Development Guide
 
-Wails Mobile uses a **Tri-Bridge Architecture** to connect the three layers of your application:
-1. **Frontend (JavaScript/HTML/CSS)**: The user interface running in a WebView.
-2. **Native Layer (Java/Android)**: Access to hardware and system APIs.
-3. **Core Engine (Go)**: Business logic and application state.
+Wails Mobile utilizes a **Go-Centric Tri-Bridge Architecture**. This design ensures that business logic remains in Go while providing seamless access to native platform features and web-based user interfaces.
 
-This guide explains how to write a plugin that spans all three layers.
+## The Architecture
 
----
-
-## 1. The Java Layer (Android)
-
-Every plugin starts with a Java implementation that implements the `WailsPlugin` interface. This interface allows your plugin to hook into the Activity lifecycle and handle actions.
-
-### Create the Plugin Class
-Create a new package under `com.wailspackage.<yourplugin>` and implement `WailsPlugin`.
-
-```java
-package com.wailspackage.device;
-
-import com.wailsplugin.WailsPlugin;
-import android.os.Build;
-import androidx.appcompat.app.AppCompatActivity;
-
-public class DevicePlugin implements WailsPlugin {
-    private AppCompatActivity mActivity;
-
-    @Override
-    public String getDomain() { return "device"; } // Unique namespace
-
-    @Override
-    public void onAttach(AppCompatActivity activity) {
-        this.mActivity = activity;
-    }
-
-    @Override
-    public String handleAction(String action, String jsonArgsPayload) {
-        if ("getInfo".equals(action)) {
-            return String.format("{\"model\":\"%s\", \"version\":\"%s\"}", 
-                Build.MODEL, Build.VERSION.RELEASE);
-        }
-        return "{\"error\":\"Unknown action\"}";
-    }
-
-    @Override public void onActivityResult(int req, int res, Intent data) {}
-    @Override public void onRequestPermissionsResult(int req, String[] perms, int[] res) {}
-}
-```
-
-### Register the Plugin
-In your `WailsWebViewActivity.java`, register the plugin in `onCreate`:
-
-```java
-registerPlugin(new DevicePlugin());
-```
+1.  **Frontend (UI)**: Dispatches user actions to Go.
+2.  **Go Engine (Logic & Orchestration)**: The "Brain" of the application. It processes requests, manages state, and instructs the Native Layer when platform-specific hardware or APIs are required.
+3.  **Native Layer (Platform Features)**: Fulfills requests from Go (e.g., Camera, Notifications, WorkManager). It is **Context-Aware**, supporting both foreground (Activity) and background (Service/Worker) operations.
 
 ---
 
-## 2. The Go Layer (Backend)
+## Developing a Plugin
 
-The Go layer acts as the orchestrator. It can call the Java layer and receive async callbacks.
+A complete plugin typically consists of three parts:
 
-### Implement the Go Plugin
-Create a new directory under `wails/<yourplugin>`.
+### 1. The Go Wrapper (`wails/myplugin`)
+The Go layer provides the primary API for both the Frontend and other Go services.
 
 ```go
-package device
+package myplugin
 
-import (
-	"github.com/its-ernest/wails-mobile/wails"
-)
+import "github.com/its-ernest/wails-mobile/wails"
 
-type DevicePlugin struct {
-	app *wails.Application
+type MyPlugin struct {
+    app *wails.Application
 }
 
-func (p *DevicePlugin) Init(app *wails.Application) error {
-	p.app = app
-	return nil
+//Init attaches Application context in Go to your plugin
+func (p *MyPlugin) Init(app *wails.Application) error {
+    p.app = app
+    return nil
 }
 
-// GetInfo calls the Java layer synchronously
-func (p *DevicePlugin) GetInfo() string {
-	return wails.HandleNativeAction("device:getInfo", "{}")
+// PerformAction can be called by JS or Go. It orchestrates the native call
+func (p *MyPlugin) PerformAction(data string) string {
+    // Go calls the Native Platform bridge
+    // the key "myplugin:action" would be implemented in native Java or Swift
+    // the end-dev has to never write JNI
+    return wails.CallNativePlatform("myplugin:action", data)
 }
+```
+
+### 2. The Native Implementation
+The native implementation handles the actual platform API calls. It must implement the `WailsPlugin` interface.
+
+*   [**Android Implementation Guide (Java/Kotlin)**](./PLUGINS_ANDROID.md)
+*   *iOS Implementation Guide (Swift/Obj-C) - Coming Soon*
+
+### 3. The Frontend Integration (`app.js`)
+The frontend interacts with the plugin **strictly through the Go layer**.
+
+```js
+// Call the Go wrapper
+// similar to how you'd call Go methods
+const result = await Wails.CallGo('MyPlugin.PerformAction', "some-data");
 ```
 
 ---
 
-## 3. The Frontend Layer (JavaScript)
+## Bidirectional Communication
 
-Finally, use the `WailsBind` object to interact with your plugin.
+### Synchronous (Request-Response)
+Standard calls like `wails.CallNativePlatform` return a string response immediately.
 
-### Standard Synchronous Call
-```javascript
-async function getDeviceInfo() {
-    // Call Go, which in turn calls Java
-    const info = await WailsBind.callGo("DevicePlugin.GetInfo", "[]");
-    console.log("Device Info:", JSON.parse(info));
-}
-```
+### Asynchronous (Events)
+For long-running tasks, the Native Layer should trigger a "Native Action" back to Go, which Go then emits as a Wails Event:
 
-### Direct Native Call (Bypassing Go)
-```javascript
-const info = WailsBind.callNative("device:getInfo", "{}");
-```
+1.  **Native**: Calls `Wailsmobile.handleNativeAction("myplugin:finished", json)`.
+2.  **Go**: In plugin's `Init`, registers a handler:
+    ```go
+    app.RegisterNativeMethod("myplugin:finished", func(args []json.RawMessage) (interface{}, error) {
+        app.Events.Emit("plugin-event", args[0])
+        return nil, nil
+    })
+    ```
+3.  **Frontend**: Listens for the event:
+    ```js
+    Wails.on("plugin-event", (data) => { ... });
+    ```
 
 ---
 
 ## Best Practices
 
-1. **Namespacing**: Always prefix your actions with your domain (e.g., `domain:action`).
-2. **Asynchronous Events**: For long-running tasks (like taking a photo), return a "pending" status immediately from `handleAction` and use `app.Events.Emit` from Go to send the result back to JS when it's ready.
-3. **JSON Consistency**: Always use JSON for payloads to ensure compatibility across the bridge.
+*   **Go-First Logic**: Never put business logic in the Native layer. Use Native only for API access.
+*   **JSON Everywhere**: Always use JSON strings for payloads between Go and Native to ensure cross-platform compatibility.
+*   **Context Safety**: Ensure your native code is background-safe (see platform-specific guides).
+*   **Namespacing**: Prefix all native actions with your plugin domain (e.g., `logger:log`, `camera:capture`).

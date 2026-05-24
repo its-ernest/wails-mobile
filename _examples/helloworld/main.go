@@ -21,3 +21,9 @@ func (s *AppService) Ping() (map[string]string, error) {
 		"status": "alive",
 	}, nil
 }
+
+func (s *AppService) RequestPermissions() (map[string]string, error) {
+	return map[string]string{
+		"status": "alive",
+	}, nil
+}

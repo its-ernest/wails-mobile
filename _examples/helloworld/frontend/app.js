@@ -6,7 +6,7 @@ function updateOutput(text) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-    // 1. Standard Go Call
+
     document.getElementById('send').addEventListener('click', async () => {
         const name = document.getElementById('name').value;
         try {
@@ -17,13 +17,23 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 2. Permission Plugin (Managed by Go)
     document.getElementById('check-perm').addEventListener('click', async () => {
         try {
             const result = await Wails.CallGo('PermissionPlugin.Check', "android.permission.CAMERA");
             // Go returns the raw string from Java
             const parsed = JSON.parse(result);
             updateOutput(`Camera Status: ${parsed.status}`);
+        } catch (err) {
+            updateOutput(`Error: ${err.message}`);
+        }
+    });
+
+    document.getElementById('check-notif').addEventListener('click', async () => {
+        try {
+            const result = await Wails.CallGo('PermissionPlugin.Check', "android.permission.POST_NOTIFICATIONS");
+            // Go returns the raw string from Java
+            const parsed = JSON.parse(result);
+            updateOutput(`Notif Status: ${parsed.status}`);
         } catch (err) {
             updateOutput(`Error: ${err.message}`);
         }
@@ -38,11 +48,45 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 3. Native Go Method
+    document.getElementById('request-notif').addEventListener('click', async () => {
+        try {
+            await Wails.CallGo('PermissionPlugin.Request', "android.permission.POST_NOTIFICATIONS");
+            updateOutput("Requested notification... check the system dialog.");
+        } catch (err) {
+            updateOutput(`Error: ${err.message}`);
+        }
+    });
+
     document.getElementById('ping').addEventListener('click', async () => {
         try {
             const result = await Wails.CallGo('AppService.Ping');
             updateOutput(`Bridge Ping: ${result.status}`);
+        } catch (err) {
+            updateOutput(`Error: ${err.message}`);
+        }
+    });
+
+    document.getElementById('enqueue-work').addEventListener('click', async () => {
+        try {
+            const result = await Wails.CallGo('AppService.EnqueuePeriodic');
+            const parsed = JSON.parse(result);
+            updateOutput(`Work Enqueued: ${parsed.status} (ID: ${parsed.id})`);
+        } catch (err) {
+            updateOutput(`Error: ${err.message}`);
+        }
+    });
+
+    document.getElementById('notify').addEventListener('click', async () => {
+        try {
+            // Passing ID: 0 (or omitting it) will now generate a unique notification instead of overwriting
+            const result = await Wails.CallGo('NotificationPlugin.Post', {
+                id: 30,
+                title: "Unique Notification",
+                body: "This won't overwrite previous ones unless they share the same ID.",
+                importance: "HIGH"
+            });
+            const parsed = JSON.parse(result);
+            updateOutput(`Notification Posted: ID ${parsed.id}`);
         } catch (err) {
             updateOutput(`Error: ${err.message}`);
         }

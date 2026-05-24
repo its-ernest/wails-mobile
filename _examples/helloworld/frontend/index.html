@@ -2,71 +2,203 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hello World</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Wails Mobile</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #121212;
-            color: #f8fafc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-        .card {
-            background: #1f2937;
-            padding: 2rem;
-            border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.35);
-            max-width: 420px;
-            width: 100%;
-        }
-        input, button {
-            width: 100%;
-            margin-top: 1rem;
-            padding: 0.9rem 1rem;
-            border-radius: 12px;
-            border: none;
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
         }
         input {
-            background: #111827;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #0f172a;
+            color: #f8fafc;
+            margin: 0;
+            padding: calc(1rem + env(safe-area-inset-top)) 1rem calc(1rem + env(safe-area-inset-bottom)) 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        .header {
+            padding: 0.5rem 0.25rem 0 0.25rem;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin: 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-top: 0.25rem;
+            font-weight: 500;
+        }
+        .card {
+            background: #1e293b;
+            border-radius: 24px;
+            padding: 1.25rem;
+            border: 1px solid #334155;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            width: 100%; /* Ensures card locks to bounds */
+        }
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #94a3b8;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+        .input-row {
+            display: flex;
+            gap: 0.5rem;
+            width: 100%;
+        }
+        input {
+            flex: 1;
+            min-width: 0; /* Critical: Stops input from overflowing flex container */
+            background: #0f172a;
             color: #f8fafc;
             border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+        input:focus {
+            border-color: #22c55e;
+        }
+        .button-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+        }
+        .button-pair {
+            display: flex;
+            gap: 0.5rem;
+            width: 100%;
         }
         button {
-            background: #22c55e;
-            color: #0f172a;
-            font-weight: 700;
+            flex: 1;
+            min-width: 0; /* Ensures consistent distribution inside grids */
+            border: none;
+            border-radius: 14px;
+            padding: 0.85rem 0.75rem; /* Marginally reduced side padding for system safety */
+            font-size: 0.9rem;
+            font-weight: 600;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            transition: filter 0.1s ease, transform 0.1s ease;
         }
+        button:active {
+            transform: scale(0.98);
+            filter: brightness(0.9);
+        }
+        #send { 
+            background: #22c55e; 
+            color: #0f172a; 
+            font-weight: 700;
+            flex: 0 0 auto; /* Keeps the execute action tightly bound without squishing text */
+            padding: 0.75rem 1.25rem;
+        }
+        .btn-check { background: #3b82f6; color: #ffffff; }
+        .btn-request { background: #8b5cf6; color: #ffffff; }
+        .btn-action { background: #ec4899; color: #ffffff; }
+        .btn-worker { background: #f59e0b; color: #0f172a; font-weight: 700; }
+        .btn-bridge { background: #475569; color: #ffffff; width: 100%; }
+        
         pre {
-            margin-top: 1rem;
+            margin: 0;
             background: #0f172a;
+            color: #38bdf8;
             padding: 1rem;
-            border-radius: 12px;
+            border-radius: 16px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.85rem;
             white-space: pre-wrap;
+            word-break: break-all;
+            border: 1px solid #334155;
+            min-height: 90px;
+            max-height: 160px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>Hello World</h1>
-        <p>Enter your name and call the Go backend.</p>
 
-        <input id="name" type="text" placeholder="Type a name" value="Wails" />
-        <button id="send">Say Hello</button>
-
-        <div style="margin-top: 2rem; border-top: 1px solid #334155; padding-top: 1rem;">
-            <h3>Native Features</h3>
-            <button id="check-perm" style="background: #3b82f6; color: white;">Check Camera</button>
-            <button id="request-perm" style="background: #8b5cf6; color: white;">Request Camera</button>
-            <button id="ping" style="background: #64748b; color: white;">Ping Native Bridge</button>
+    <div class="container">
+        <div class="header">
+            <h1>Wails Mobile</h1>
+            <div class="subtitle">Platform verification environment</div>
         </div>
 
-        <pre id="output">Result will show here.</pre>
+        <!-- Section 1: Core IPC -->
+        <div class="card">
+            <div class="section-title">Core Execution Channel</div>
+            <div class="input-row">
+                <input id="name" type="text" placeholder="Type a name" value="Wails" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+                <button id="send">Say Hello</button>
+            </div>
+        </div>
+
+        <!-- Section 2: OS Permissions -->
+        <div class="card">
+            <div class="section-title">Runtime System Permissions</div>
+            <div class="button-stack">
+                <div class="button-pair">
+                    <button id="check-perm" class="btn-check">Check Cam</button>
+                    <button id="check-notif" class="btn-check">Check Notif</button>
+                </div>
+                <div class="button-pair">
+                    <button id="request-perm" class="btn-request">Request Cam</button>
+                    <button id="request-notif" class="btn-request">Request Notif</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Background Subsystems -->
+        <div class="card">
+            <div class="section-title">Asynchronous Tasks</div>
+            <div class="button-stack">
+                <div class="button-pair">
+                    <button id="notify" class="btn-action">Push Notif</button>
+                    <button id="enqueue-work" class="btn-worker">WorkManager</button>
+                </div>
+                <button id="ping" class="btn-bridge">Ping Native Bridge Channel</button>
+            </div>
+        </div>
+
+        <!-- Section 4: Diagnostics Terminal -->
+        <div class="card">
+            <div class="section-title">Diagnostics Output Console</div>
+            <pre id="output">System ready. Framework link online.</pre>
+        </div>
     </div>
+
     <script src="wails.js"></script>
     <script src="app.js"></script>
 </body>

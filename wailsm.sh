@@ -96,67 +96,67 @@ execute_refresh() {
 
 manage_plugin() {
     local action="$1" # "add" or "remove"
-    local plugin_repo="$2" # e.g., github.com/username/wailspackage-camera
+    local plugin_repo="$2" # e.g., github.com/its-ernest/wails-mobile/wails/permission
     
     if [ -z "$plugin_repo" ]; then
         echo "Error: Please provide a valid plugin repository path." >&2
-        echo "Example: $0 --${action} github.com/wailspackage/camera" >&2
         exit 1
     fi
 
-    # Ensure this command is executed within a valid wailsm project space
     if [ ! -d "native_plugins" ] || [ ! -f "go.mod" ]; then
         echo "Error: You must execute plugin commands from the root of a wailsm project directory." >&2
         exit 1
     fi
 
-    # Calculate local download paths inside GOPATH source structures
-    local go_path_src
-    go_path_src=$(go env GOPATH)/src/${plugin_repo}
-
     if [ "$action" == "add" ]; then
         echo "=== Installing Plugin: ${plugin_repo} ==="
         
-        # 1. Register logic via Go Modules
+        # 1. Download and track the module properly using modern Go Module standards
         go get "$plugin_repo"
-        
-        # Force download source code to standard GOPATH for native source extraction
-        # (Using classic v1 fallback flag or shallow clone into staging environment if using pure go modules mode)
-        GO111MODULE=off go get -d "$plugin_repo" || true
 
-        # 2. Inject Native Android Packages
-        if [ -d "${go_path_src}/android" ]; then
-            echo "Found Native Android bindings. Syncing into Android core space..."
-            cp -r "${go_path_src}/android/." ./native_plugins/android/
-            # Note for your android.sh asset worker: 
-            # Make sure android.sh copies everything from `./native_plugins/android/*` 
-            # into the actual destination Android Studio app directory during a --refresh run.
+        # 2. Ask Go exactly where this package's source code is located on disk
+        local go_mod_src
+        go_mod_src=$(go list -m -f '{{.Dir}}' "$plugin_repo" 2>/dev/null || true)
+
+        if [ -z "$go_mod_src" ]; then
+            echo "Error: Could not resolve source location for module: ${plugin_repo}" >&2
+            exit 1
         fi
 
-        # 3. Inject Native iOS Packages
-        if [ -d "${go_path_src}/ios" ]; then
+        echo "Module source located at: ${go_mod_src}"
+
+        # 3. Inject Native Android Packages
+        if [ -d "${go_mod_src}/android" ]; then
+            echo "Found Native Android bindings. Syncing into Android core space..."
+            # Using -R to ensure directory permissions are readable/writable even if cache is read-only
+            cp -R "${go_mod_src}/android/." ./native_plugins/android/
+        else
+            echo "Notice: No native /android directory found in this plugin."
+        fi
+
+        # 4. Inject Native iOS Packages
+        if [ -d "${go_mod_src}/ios" ]; then
             echo "Found Native iOS bindings. Syncing into iOS core space..."
-            cp -r "${go_path_src}/ios/." ./native_plugins/ios/
+            cp -R "${go_mod_src}/ios/." ./native_plugins/ios/
         fi
         
         echo "=== Plugin ${plugin_repo} added successfully! ==="
         echo "Run '$0 --refresh <platform>' to rebuild bindings with the new packages."
 
     elif [ "$action" == "remove" ]; then
-        echo "=== Uninstalling Plugin: ${plugin_repo} ==="
+        echo "=== Removing Plugin: ${plugin_repo} ==="
         
-        # Read the directories inside the plugin repo before removing to scrub target files cleanly
-        if [ -d "${go_path_src}/android" ]; then
-            # Clean matching packages out of native_plugins room
-            local plugin_dirname
-            plugin_dirname=$(basename "$plugin_repo")
-            rm -rf "./native_plugins/android/${plugin_dirname:?}"
-        fi
-        if [ -d "${go_path_src}/ios" ]; then
-            rm -rf "./native_plugins/ios/$(basename "$plugin_repo")"
-        fi
+        # Extract the trailing folder name to locate the directory inside staging
+        local plugin_dirname
+        plugin_dirname=$(basename "$plugin_repo")
 
-        go drop "$plugin_repo" || go mod edit -droprequire="$plugin_repo"
+        # Clean matching directories out of native_plugins rooms cleanly
+        rm -rf "./native_plugins/android/${plugin_dirname}"
+        rm -rf "./native_plugins/ios/${plugin_dirname}"
+
+        # Drop requirement cleanly from go.mod
+        go mod edit -droprequire="$plugin_repo"
+        go mod tidy
         echo "=== Plugin ${plugin_repo} removed ==="
     fi
 }

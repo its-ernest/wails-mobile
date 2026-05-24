@@ -10,9 +10,11 @@ Package wails provides the core runtime for Wails Mobile applications. It manage
 
 ## Index
 
+- [func CallNativePlatform\(method string, args string\) string](<#CallNativePlatform>)
 - [func HandleMessageFromFrontend\(methodKey string, jsonArgsPayload string\) string](<#HandleMessageFromFrontend>)
 - [func HandleNativeAction\(methodKey string, jsonArgsPayload string\) string](<#HandleNativeAction>)
 - [func SetGlobalApp\(app \*Application\)](<#SetGlobalApp>)
+- [func SetNativeCallHandler\(handler NativeCallHandler\)](<#SetNativeCallHandler>)
 - [type Application](<#Application>)
   - [func NewApplication\(options Options\) \*Application](<#NewApplication>)
   - [func \(a \*Application\) InvokeCall\(methodKey string, rawArgs \[\]json.RawMessage\) \(interface\{\}, error\)](<#Application.InvokeCall>)
@@ -34,14 +36,24 @@ Package wails provides the core runtime for Wails Mobile applications. It manage
   - [func \(b \*MobileBridge\) PollNativeEvent\(\) string](<#MobileBridge.PollNativeEvent>)
   - [func \(b \*MobileBridge\) RequestAssetBytes\(urlPath string\) \[\]byte](<#MobileBridge.RequestAssetBytes>)
   - [func \(b \*MobileBridge\) RequestAssetMime\(urlPath string\) string](<#MobileBridge.RequestAssetMime>)
+- [type NativeCallHandler](<#NativeCallHandler>)
 - [type Options](<#Options>)
 - [type WailsEvent](<#WailsEvent>)
 - [type Window](<#Window>)
 - [type WindowOptions](<#WindowOptions>)
 
 
+<a name="CallNativePlatform"></a>
+## func [CallNativePlatform](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L24>)
+
+```go
+func CallNativePlatform(method string, args string) string
+```
+
+CallNativePlatform calls the registered native handler from Go.
+
 <a name="HandleMessageFromFrontend"></a>
-## func [HandleMessageFromFrontend](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L51>)
+## func [HandleMessageFromFrontend](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L72>)
 
 ```go
 func HandleMessageFromFrontend(methodKey string, jsonArgsPayload string) string
@@ -50,7 +62,7 @@ func HandleMessageFromFrontend(methodKey string, jsonArgsPayload string) string
 HandleMessageFromFrontend is a package\-level helper exposed to gomobile\-generated Java wrappers.
 
 <a name="HandleNativeAction"></a>
-## func [HandleNativeAction](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L57>)
+## func [HandleNativeAction](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L78>)
 
 ```go
 func HandleNativeAction(methodKey string, jsonArgsPayload string) string
@@ -59,13 +71,22 @@ func HandleNativeAction(methodKey string, jsonArgsPayload string) string
 HandleNativeAction is a package\-level helper exposed to Java plugin packages.
 
 <a name="SetGlobalApp"></a>
-## func [SetGlobalApp](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L10>)
+## func [SetGlobalApp](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L31>)
 
 ```go
 func SetGlobalApp(app *Application)
 ```
 
 
+
+<a name="SetNativeCallHandler"></a>
+## func [SetNativeCallHandler](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L19>)
+
+```go
+func SetNativeCallHandler(handler NativeCallHandler)
+```
+
+SetNativeCallHandler registers the platform\-specific handler.
 
 <a name="Application"></a>
 ## type [Application](<https://github.com/its-ernest/wails-mobile/blob/main/wails/app.go#L38-L45>)
@@ -215,7 +236,7 @@ type EventCallback func(data interface{})
 ```
 
 <a name="MobileBridge"></a>
-## type [MobileBridge](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L15>)
+## type [MobileBridge](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L36>)
 
 MobileBridge is a clean, dedicated wrapper struct that gobind can parse into a Java Class.
 
@@ -224,7 +245,7 @@ type MobileBridge struct{}
 ```
 
 <a name="NewMobileBridge"></a>
-### func [NewMobileBridge](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L17>)
+### func [NewMobileBridge](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L38>)
 
 ```go
 func NewMobileBridge() *MobileBridge
@@ -233,7 +254,7 @@ func NewMobileBridge() *MobileBridge
 
 
 <a name="MobileBridge.CallGoBackend"></a>
-### func \(\*MobileBridge\) [CallGoBackend](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L22>)
+### func \(\*MobileBridge\) [CallGoBackend](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L43>)
 
 ```go
 func (b *MobileBridge) CallGoBackend(methodKey string, jsonArgsPayload string) string
@@ -242,7 +263,7 @@ func (b *MobileBridge) CallGoBackend(methodKey string, jsonArgsPayload string) s
 CallGoBackend provides a clean, class\-mapped method for the JNI layer to invoke.
 
 <a name="MobileBridge.PollNativeEvent"></a>
-### func \(\*MobileBridge\) [PollNativeEvent](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L43>)
+### func \(\*MobileBridge\) [PollNativeEvent](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L64>)
 
 ```go
 func (b *MobileBridge) PollNativeEvent() string
@@ -251,7 +272,7 @@ func (b *MobileBridge) PollNativeEvent() string
 
 
 <a name="MobileBridge.RequestAssetBytes"></a>
-### func \(\*MobileBridge\) [RequestAssetBytes](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L79>)
+### func \(\*MobileBridge\) [RequestAssetBytes](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L100>)
 
 ```go
 func (b *MobileBridge) RequestAssetBytes(urlPath string) []byte
@@ -260,13 +281,24 @@ func (b *MobileBridge) RequestAssetBytes(urlPath string) []byte
 RequestAssetBytes acts as a direct memory array provider for the native layout
 
 <a name="MobileBridge.RequestAssetMime"></a>
-### func \(\*MobileBridge\) [RequestAssetMime](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L87>)
+### func \(\*MobileBridge\) [RequestAssetMime](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L108>)
 
 ```go
 func (b *MobileBridge) RequestAssetMime(urlPath string) string
 ```
 
 RequestAssetMime returns correct content headers to the WebView controller
+
+<a name="NativeCallHandler"></a>
+## type [NativeCallHandler](<https://github.com/its-ernest/wails-mobile/blob/main/wails/bridge.go#L12-L14>)
+
+NativeCallHandler is an interface implemented by the mobile platform \(Java/Obj\-C\) to handle calls originating from the Go layer.
+
+```go
+type NativeCallHandler interface {
+    OnNativeCall(method string, args string) string
+}
+```
 
 <a name="Options"></a>
 ## type [Options](<https://github.com/its-ernest/wails-mobile/blob/main/wails/app.go#L13-L22>)

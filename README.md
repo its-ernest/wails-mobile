@@ -3,6 +3,7 @@
 **Automation scripts currently works for Linux systems**
 
 Wails Mobile is a port of Go v3 implementation to support mobile devies
+Gradle support: `Gradle 9.2.1` by default. You can change the version to your Gradle version
 
 ## Overview
 

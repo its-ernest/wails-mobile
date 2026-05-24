@@ -3,8 +3,7 @@ module github.com/its-ernest/wails-mobile/_examples/wailsmobile
 go 1.26.3
 
 require (
-	github.com/its-ernest/wails-mobile v1.0.2
-	github.com/its-ernest/wails-mobile/wails/permission v1.0.2
+	github.com/its-ernest/wails-mobile v1.0.4
 )
 
 require (
@@ -16,6 +15,4 @@ require (
 
 tool golang.org/x/mobile/cmd/gobind
 
-replace github.com/its-ernest/wails-mobile v1.0.2 => ../../
-
-replace github.com/its-ernest/wails-mobile/wails/permission v1.0.2 => ../../wails/permission
+//replace github.com/its-ernest/wails-mobile v1.0.4 => ../../
