@@ -4,8 +4,10 @@ Wails Mobile is a port of Go v3 implementation to support mobile devies.
 
 Gradle support: `Gradle 9.2.1` by default. You can change the version to your Gradle version
 
+<p>
 <img alt="Example UI" src="./hello-example.jpg" width="200" />
 <img alt="Notification plugin" src="./notification-example.jpg" width="200" />
+</p>
 
 ## Overview
 
