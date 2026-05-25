@@ -95,10 +95,14 @@ func StartApplication() string {
 	return `{"status":"started"}`
 }
 
+// Below functions are called from Java to handle messages/events from the frontend or to perform native actions.
+
+// HandleMessageFromFrontend processes messages sent from the JavaScript frontend.
 func HandleMessageFromFrontend(methodKey string, jsonArgsPayload string) string {
 	return wails.HandleMessageFromFrontend(methodKey, jsonArgsPayload)
 }
 
+// HandleNativeAction processes calls from Go to Java and returns the result back to Go.
 func HandleNativeAction(methodKey string, jsonArgsPayload string) string {
 	return wails.HandleNativeAction(methodKey, jsonArgsPayload)
 }
@@ -107,10 +111,12 @@ func RequestAssetBytes(urlPath string) []byte {
 	return wails.NewMobileBridge().RequestAssetBytes(urlPath)
 }
 
+// RequestAssetMime retrieves the MIME type for a given asset path.
 func RequestAssetMime(urlPath string) string {
 	return wails.NewMobileBridge().RequestAssetMime(urlPath)
 }
 
+// PollNativeEvent allows Go to check for any events sent from Java and retrieve them as a JSON string.
 func PollNativeEvent() string {
 	return wails.NewMobileBridge().PollNativeEvent()
 }

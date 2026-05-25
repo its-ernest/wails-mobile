@@ -1,0 +1,54 @@
+version: '3'
+
+vars:
+  CLI_NAME: wailsm
+  SRC_PATH: ./cmd/wailsm/
+
+tasks:
+  default:
+    desc: Lists available development tasks
+    cmds:
+      - task --list
+
+  docs:
+    desc: Generate markdown documentation for all Go packages
+    preconditions:
+      - sh: 'command -v gomarkdoc >/dev/null 2>&1'
+        msg: "gomarkdoc is required but not installed. Run: go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest"
+    cmds:
+      - echo "Generating documentation..."
+      - gomarkdoc -o "./DOCS.md" ./wails/...
+      - echo "Documentation generated in respective directories."
+
+  wailsm-sh:
+    desc: Compile the legacy shell-script helper binary using shc
+    preconditions:
+      - sh: 'command -v shc >/dev/null 2>&1'
+        msg: "shc utility is required to compile shell scripts into binaries."
+    cmds:
+      - echo "Building wails-mobile legacy wailsm.sh CLI helper..."
+      - rm -rf {{.CLI_NAME}}
+      - shc -f wailsm.sh
+      - mv wailsm.sh.x {{.CLI_NAME}}
+      - echo "wailsm script compiled successfully."
+
+  wailsm:
+    desc: Cross-compile the Go-based wailsm toolchain CLI for Linux, macOS, and Windows
+    cmds:
+      - echo "Building wails-mobile production Go CLI engine..."
+      
+      # Cross-compiling for Linux target architectures
+      - GOOS=linux GOARCH=amd64 go build -o dist/linux/{{.CLI_NAME}} {{.SRC_PATH}}
+      
+      # Cross-compiling for Apple Silicon (M1/M2/M3) environments
+      - GOOS=darwin GOARCH=arm64 go build -o dist/darwin/{{.CLI_NAME}} {{.SRC_PATH}}
+      
+      # Cross-compiling for Windows environments
+      - GOOS=windows GOARCH=amd64 go build -o dist/windows/{{.CLI_NAME}}.exe {{.SRC_PATH}}
+      
+      - echo "All production cross-compilation binaries staged inside ./dist/"
+
+  clean:
+    desc: Clean up build artifacts and binaries
+    cmds:
+      - rm -rf ./dist/

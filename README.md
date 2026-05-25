@@ -1,16 +1,18 @@
 # Wails Mobile (Stable Android Support)
 
-**Automation scripts currently works for Linux systems**
+Wails Mobile is a port of Go v3 implementation to support mobile devies.
 
-Wails Mobile is a port of Go v3 implementation to support mobile devies
 Gradle support: `Gradle 9.2.1` by default. You can change the version to your Gradle version
+
+<img alt="Example UI" src="./hello-example.jpg" style="max-width: 200px; max-height: 500px">
+<img alt="Notification plugin" src="./notification-example.jpg" style="max-width: 200px; max-height: 500px">
 
 ## Overview
 
 - `wails/` - core Go runtime package for mobile bridged apps.
 - `_examples/helloworld/` - small sample app with embedded frontend, Go backend, and Android sync flow.
 - `native/android/` - Android app template app where generated AARs get dumped.
-- `wailsm.sh` / `wailsm` - project starter and CLI automated helper that can be installed into your PATH.
+- `wailsm.sh` / `wailsm` - Legacy `wailsm` CLI helper. Now revamped into `Go` codebase for cross-platform compatibility. See [cmd/wailsm/main.go](cmd/wailsm/main.go)
 
 ---
 
@@ -33,7 +35,6 @@ wailsm --new my-new-app
 
 That command downloads a starter pre-configured Wails Mobile project files into `my-app/` directory, ready to be edited and compiled.
 
-The pre-configured project can be extended(adding more code), 
 when it's time to build, open `native/android/` folder in Android Studio and click `Build`.
 
 --- 
@@ -41,8 +42,8 @@ when it's time to build, open `native/android/` folder in Android Studio and cli
 ## Requirements
 
 - Go 1.24+
-- Android SDK + NDK installed for `gomobile bind`
-- `git`, `curl`, `unzip` for the installer flow
+- Android SDK + NDK installed
+- `git`, `curl`, `unzip` for the installation
 
 ---
 
@@ -54,7 +55,6 @@ when it's time to build, open `native/android/` folder in Android Studio and cli
 - `native/` — this folder contains the standard Android Studio or XCode app project
 
 ## Refresh or Sync workflow
-
 After editing or write your Go code or frontend, you must refresh or sync first to produce native bindings.
 
 You can optionally update `android.ini` to control architecture, Android API, output path, and template SDK values. By default, this works for Android 5 up to latest Android 17.
@@ -70,7 +70,6 @@ The script will:
 
 
 ## Building the App
-
 Once again: don't forget after editing or write your Go code, you must refresh or sync first to produce native bindings.
 
 Now open the project in Android Studio or XCode.
@@ -81,7 +80,6 @@ Where the resulting projects are found:
 
 
 ## Adding external Plugins
-
 External plugins are just external Go packages, with the directory structured in such a way Wails Mobile CLI can realize it contains some native platform code. 
 
 Sample Plugin structure:
@@ -102,7 +100,7 @@ You can add a plugin with:
 wailsm --add github.com/<handle>/<plugin> # uses `go get...` under the hood
 ```
 
-## Removing packages
+## Removing plugins
 You can remove a plugin from Wails mobile with:
 ```bash
 wailsm --remove github.com/<handle>/<plugin>
@@ -112,9 +110,16 @@ wailsm --remove github.com/<handle>/<plugin>
 
 You can design an external plugin to be integrated into Wails Mobile application, or even write some app-specific native Java or Swift code and call it from Go. 
 
-Instructions on achieving this goal is wired in `[PLUGINS.md](PLUGINS.md)`
+Instructions on achieving this goal is wired in [`plugins/PLUGINS.md`](plugins/PLUGINS.md)
 
 ---
+
+## List of pre-packed plugins
+
+- `plugins/logger`: This plugin is better suited to make logs appear in ADB logcat or native logs for easier debugging
+- `plugins/notification`: Provides methods for your app to **Show Notifications**
+- `plugins/permission`: This plugin provides capability to check and request **Runtime Permissions** on mobile from frontend or Go directly
+- `pluginis/workmanager`: Makes your app capable of running **Periodic Background Tasks** even when UI is detached or swiped away
 
 ## To uninstall
 
@@ -127,4 +132,4 @@ sudo rm -rf /usr/local/bin/wailsm
 
 - The WebView frontend uses `WailsBind.callGo(...)` to invoke the Go backend.
 - Currently, `wails-mobile` is stable enough for Android builds. If you care to get support for iOS sooner, contribute by translating the Java project into Swift project. 
-- The core bridge in Go is cross-platform(`Android` and `iOS`). No writing of JNI. No writing of *C* code and headers. 
+- The core bridge in Go is cross-platform(`Android` and `iOS`). No writing of JNI. No writing of **`C`** code and headers. 
