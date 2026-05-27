@@ -19,18 +19,6 @@ Gradle support: `Gradle 9.2.1` by default. You can change the version to your Gr
 
 ---
 
-## Install the CLI
-
-To install  and build apps with `wails-mobile`, use the CLI helper by running the command below:
-Download size is below: `700 kb`
-Use the command below:
-
-Here is the updated installation section for your README. It breaks out separate, precise instructions for Linux, macOS, and Windows.
-
-The installation commands dynamically pull the platform-specific release binary (`wailsm-linux`, `wailsm-mac`, or `wailsm.exe`), renames it cleanly to `wailsm`, and handles executable path permissions natively for each system.
-
----
-
 ### Install the CLI
 
 To install and manage your applications within the `wails-mobile` ecosystem, install our lightweight CLI orchestration engine (download size is under 700 KB). Choose the specific pipeline instruction for your host operating system below:
