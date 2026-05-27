@@ -51,4 +51,5 @@ public class LoggerPlugin implements WailsPlugin {
 
     @Override public void onActivityResult(int req, int res, Intent d) {}
     @Override public void onRequestPermissionsResult(int req, String[] p, int[] res) {}
+    @Override public void onNewIntent(Intent intent) {}
 }

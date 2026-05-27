@@ -115,6 +115,24 @@ public class WailsWebViewActivity extends AppCompatActivity {
 
         mWebView.loadUrl("https://wails.local/");
         startEventPolling();
+
+        // Handle initial intent for Deep Linking
+        handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (intent == null) return;
+        WailsApplication app = (WailsApplication) getApplication();
+        for (WailsPlugin plugin : app.getPlugins().values()) {
+            plugin.onNewIntent(intent);
+        }
     }
 
     private void startEventPolling() {

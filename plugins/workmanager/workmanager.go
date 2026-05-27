@@ -126,6 +126,26 @@ func (p *WorkManagerPlugin) EnqueuePeriodic(taskKey string, intervalMinutes int,
 	return wails.CallNativePlatform("workmanager:enqueuePeriodic", string(payload)), nil
 }
 
+// IsEnqueued checks if a task with the given key is currently enqueued or running.
+func (p *WorkManagerPlugin) IsEnqueued(taskKey string) (bool, error) {
+	payload, _ := json.Marshal(map[string]string{
+		"task_key": taskKey,
+	})
+	result := wails.CallNativePlatform("workmanager:isEnqueued", string(payload))
+
+	var resp struct {
+		Enqueued bool   `json:"enqueued"`
+		Error    string `json:"error,omitempty"`
+	}
+	if err := json.Unmarshal([]byte(result), &resp); err != nil {
+		return false, err
+	}
+	if resp.Error != "" {
+		return false, fmt.Errorf(resp.Error)
+	}
+	return resp.Enqueued, nil
+}
+
 // CancelAll stops all scheduled work.
 func (p *WorkManagerPlugin) CancelAll() string {
 	return wails.CallNativePlatform("workmanager:cancelAll", "{}")

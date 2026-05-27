@@ -1,3 +1,6 @@
+// Package main implements the wailsm CLI engine. It handles cross-platform orchestration,
+// project bootstrapping, framework template setups, and plugin injection pipelines
+// for the wails-mobile ecosystem.
 package main
 
 import (
@@ -9,13 +12,18 @@ import (
 )
 
 const (
-	RepoURL      = "https://github.com/its-ernest/wails-mobile"
-	Version      = "v1.0.5"
+	// RepoURL is the upstream repository hosting core templates and codebases.
+	RepoURL = "https://github.com/its-ernest/wails-mobile"
+	// Version matches the designated framework release tag.
+	Version = "v1.0.5"
+	// ReleaseAsset is the file package downloaded to bootstrap fresh instances.
 	ReleaseAsset = "template.zip"
-	DownloadURL  = RepoURL + "/releases/latest/download/" + ReleaseAsset
+	// DownloadURL maps directly to the compiled archive within GitHub Releases.
+	DownloadURL = RepoURL + "/releases/latest/download/" + ReleaseAsset
 )
 
-// Default build parameters (Fallbacks if android.ini is absent)
+// Global framework parameters initialized with predictable fallback settings.
+// Values are overridden if an optional 'android.ini' file is parsed at runtime.
 var (
 	GomobileTarget = "android/arm64"
 	AndroidAPI     = "21"
@@ -61,6 +69,7 @@ func main() {
 	}
 }
 
+// showUsage prints formatted instruction parameters to standard output.
 func showUsage() {
 	fmt.Println("Wails Mobile Toolchain CLI (wailsm)")
 	fmt.Println("Usage:")
@@ -71,8 +80,9 @@ func showUsage() {
 	os.Exit(1)
 }
 
-// --- Core Actions ---
-
+// createNewProject bootstraps a fresh development environment workspace. It queries
+// github for the latest packaged template, unzips files natively, and installs
+// gomobile/gobind developer requirements.
 func createNewProject(targetDir string) {
 	fmt.Fprintf(os.Stdout, "=== Creating Project: %s [%s] ===\n", targetDir, Version)
 	if _, err := os.Stat(targetDir); !os.IsNotExist(err) {
@@ -80,10 +90,9 @@ func createNewProject(targetDir string) {
 		os.Exit(1)
 	}
 
-	// Pre-flight validation
 	for _, cmd := range []string{"go"} {
 		if _, err := exec.LookPath(cmd); err != nil {
-			fmt.Fprintf(os.Stderr, "Error: Required executable system dependency '%s' missing.\n", cmd)
+			fmt.Fprintf(os.Stderr, "Error: Required system tool dependency '%s' is missing.\n", cmd)
 			os.Exit(1)
 		}
 	}
@@ -104,7 +113,6 @@ func createNewProject(targetDir string) {
 	}
 	_ = os.Remove(zipPath)
 
-	// Step into directory context cleanly
 	origWd, _ := os.Getwd()
 	_ = os.Chdir(targetDir)
 	defer func() { _ = os.Chdir(origWd) }()
@@ -120,6 +128,8 @@ func createNewProject(targetDir string) {
 	fmt.Fprintf(os.Stdout, "=== Setup complete! Your project is ready in ./%s ===\n", targetDir)
 }
 
+// executeRefresh tracks configuration inputs, triggers compiler bindings,
+// and moves files to their respective target native build suites.
 func executeRefresh(platform string) {
 	if platform != "android" && platform != "ios" {
 		fmt.Fprintln(os.Stderr, "Error: Please specify a valid target platform: 'android' or 'ios'")
@@ -170,13 +180,16 @@ func executeRefresh(platform string) {
 
 		fmt.Fprintf(os.Stdout, "Done. Artifacts in %s:\n\n", outputPath)
 		fmt.Println("Open Android Studio and click on 'Build' or 'Run' to see result on your mobile.")
-		runCmd("ls", "-1", outputPath)
+
+		// Replaced shell-dependent 'ls -1' with a clean cross-platform directory scan
+		listDirectoryContents(outputPath)
 	} else {
-		// Placeholder block for your unified cross-platform iOS build sequences
 		fmt.Println("Notice: iOS pipeline synthesis engine is currently running standard validation checks.")
 	}
 }
 
+// managePlugin executes mutations across go.mod dependencies and safely
+// moves native platform specific directories inside intermediate workspaces.
 func managePlugin(action, pluginRepo string) {
 	if !dirExists("native_plugins") || !fileExists("go.mod") {
 		fmt.Fprintln(os.Stderr, "Error: You must execute plugin commands from the root of a wailsm project directory.")
@@ -188,7 +201,6 @@ func managePlugin(action, pluginRepo string) {
 
 		runCmd("go", "get", pluginRepo)
 
-		// Call 'go list' to natively determine module caching locations on disk
 		out, err := exec.Command("go", "list", "-m", "-f", "{{.Dir}}", pluginRepo).Output()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: Could not resolve source location for module: %s\n", pluginRepo)
@@ -197,7 +209,7 @@ func managePlugin(action, pluginRepo string) {
 		goModSrc := strings.TrimSpace(string(out))
 		fmt.Fprintf(os.Stdout, "Module source located at: %s\n", goModSrc)
 
-		// Inject Native Android Trees
+		// Synchronize Android Assets
 		androidSrc := filepath.Join(goModSrc, "android")
 		if dirExists(androidSrc) {
 			fmt.Println("Found Native Android bindings. Syncing into Android core space...")
@@ -208,7 +220,7 @@ func managePlugin(action, pluginRepo string) {
 			fmt.Println("Notice: No native /android directory found in this plugin.")
 		}
 
-		// Inject Native iOS Trees
+		// Synchronize iOS Assets
 		iosSrc := filepath.Join(goModSrc, "ios")
 		if dirExists(iosSrc) {
 			fmt.Println("Found Native iOS bindings. Syncing into iOS core space...")

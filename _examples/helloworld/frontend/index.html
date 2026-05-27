@@ -57,7 +57,7 @@
             padding: 1.25rem;
             border: 1px solid #334155;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            width: 100%; /* Ensures card locks to bounds */
+            width: 100%;
         }
         .section-title {
             font-size: 0.75rem;
@@ -66,26 +66,6 @@
             color: #94a3b8;
             font-weight: 700;
             margin-bottom: 0.75rem;
-        }
-        .input-row {
-            display: flex;
-            gap: 0.5rem;
-            width: 100%;
-        }
-        input {
-            flex: 1;
-            min-width: 0; /* Critical: Stops input from overflowing flex container */
-            background: #0f172a;
-            color: #f8fafc;
-            border: 1px solid #334155;
-            border-radius: 14px;
-            padding: 0.75rem 1rem;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.15s ease;
-        }
-        input:focus {
-            border-color: #22c55e;
         }
         .button-stack {
             display: flex;
@@ -100,10 +80,10 @@
         }
         button {
             flex: 1;
-            min-width: 0; /* Ensures consistent distribution inside grids */
+            min-width: 0;
             border: none;
             border-radius: 14px;
-            padding: 0.85rem 0.75rem; /* Marginally reduced side padding for system safety */
+            padding: 0.85rem 0.75rem;
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
@@ -117,18 +97,10 @@
             transform: scale(0.98);
             filter: brightness(0.9);
         }
-        #send { 
-            background: #22c55e; 
-            color: #0f172a; 
-            font-weight: 700;
-            flex: 0 0 auto; /* Keeps the execute action tightly bound without squishing text */
-            padding: 0.75rem 1.25rem;
-        }
-        .btn-check { background: #3b82f6; color: #ffffff; }
-        .btn-request { background: #8b5cf6; color: #ffffff; }
-        .btn-action { background: #ec4899; color: #ffffff; }
-        .btn-worker { background: #f59e0b; color: #0f172a; font-weight: 700; }
-        .btn-bridge { background: #475569; color: #ffffff; width: 100%; }
+        .btn-notif { background: #ec4899; color: #ffffff; }
+        .btn-bio { background: #8b5cf6; color: #ffffff; }
+        .btn-file { background: #3b82f6; color: #ffffff; }
+        .btn-check { background: #475569; color: #ffffff; }
         
         pre {
             margin: 0;
@@ -141,8 +113,8 @@
             white-space: pre-wrap;
             word-break: break-all;
             border: 1px solid #334155;
-            min-height: 90px;
-            max-height: 160px;
+            min-height: 120px;
+            max-height: 240px;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
@@ -152,50 +124,41 @@
 
     <div class="container">
         <div class="header">
-            <h1>Wails Mobile</h1>
-            <div class="subtitle">Platform verification environment</div>
+            <h1>Plugin Test</h1>
+            <div class="subtitle">Notification, Biometric & FilePicker</div>
         </div>
 
-        <!-- Section 1: Core IPC -->
+        <!-- Section 1: Notifications -->
         <div class="card">
-            <div class="section-title">Core Execution Channel</div>
-            <div class="input-row">
-                <input id="name" type="text" placeholder="Type a name" value="Wails" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
-                <button id="send">Say Hello</button>
-            </div>
-        </div>
-
-        <!-- Section 2: OS Permissions -->
-        <div class="card">
-            <div class="section-title">Runtime System Permissions</div>
+            <div class="section-title">Notifications</div>
             <div class="button-stack">
-                <div class="button-pair">
-                    <button id="check-perm" class="btn-check">Check Cam</button>
-                    <button id="check-notif" class="btn-check">Check Notif</button>
-                </div>
-                <div class="button-pair">
-                    <button id="request-perm" class="btn-request">Request Cam</button>
-                    <button id="request-notif" class="btn-request">Request Notif</button>
-                </div>
+                <button id="request-notif" class="btn-notif">Request Notification Permission</button>
+                <button id="send-notif" class="btn-notif">Send Unique Notification</button>
             </div>
         </div>
 
-        <!-- Section 3: Background Subsystems -->
+        <!-- Section 2: Biometrics -->
         <div class="card">
-            <div class="section-title">Asynchronous Tasks</div>
+            <div class="section-title">Biometric Security</div>
             <div class="button-stack">
-                <div class="button-pair">
-                    <button id="notify" class="btn-action">Push Notif</button>
-                    <button id="enqueue-work" class="btn-worker">WorkManager</button>
-                </div>
-                <button id="ping" class="btn-bridge">Ping Native Bridge Channel</button>
+                <button id="check-bio" class="btn-check">Check Availability</button>
+                <button id="auth-bio" class="btn-bio">Authenticate with Biometrics</button>
             </div>
         </div>
 
-        <!-- Section 4: Diagnostics Terminal -->
+        <!-- Section 3: File Selection -->
         <div class="card">
-            <div class="section-title">Diagnostics Output Console</div>
-            <pre id="output">System ready. Framework link online.</pre>
+            <div class="section-title">File System</div>
+            <div class="button-stack">
+                <button id="pick-image" class="btn-file">Pick Single Image</button>
+                <button id="pick-files" class="btn-file">Pick Multiple Files</button>
+            </div>
+        </div>
+
+        <!-- Section 4: Console -->
+        <div class="card">
+            <div class="section-title">Test Results</div>
+            <pre id="output">Ready to test...</pre>
         </div>
     </div>
 

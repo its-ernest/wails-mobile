@@ -3,7 +3,7 @@
 # permission
 
 ```go
-import "github.com/its-ernest/wails-mobile/wails/permission"
+import "github.com/its-ernest/wails-mobile/plugins/permission"
 ```
 
 Package permission provides a standard plugin for handling Android runtime permissions. It bridges the Go application with the native Android permission system.
@@ -19,7 +19,7 @@ Package permission provides a standard plugin for handling Android runtime permi
 
 
 <a name="PermissionPlugin"></a>
-## type [PermissionPlugin](<https://github.com/its-ernest/wails-mobile/blob/main/wails/permission/permission.go#L14-L16>)
+## type [PermissionPlugin](<https://github.com/its-ernest/wails-mobile/blob/main/plugins/permission/permission.go#L14-L16>)
 
 PermissionPlugin handles the Go\-side logic for the permissions system. It allows Go code to check and request permissions via the native bridge.
 
@@ -30,7 +30,7 @@ type PermissionPlugin struct {
 ```
 
 <a name="NewPlugin"></a>
-### func [NewPlugin](<https://github.com/its-ernest/wails-mobile/blob/main/wails/permission/permission.go#L19>)
+### func [NewPlugin](<https://github.com/its-ernest/wails-mobile/blob/main/plugins/permission/permission.go#L19>)
 
 ```go
 func NewPlugin() *PermissionPlugin
@@ -39,7 +39,7 @@ func NewPlugin() *PermissionPlugin
 NewPlugin creates a new instance of the PermissionPlugin.
 
 <a name="PermissionPlugin.Check"></a>
-### func \(\*PermissionPlugin\) [Check](<https://github.com/its-ernest/wails-mobile/blob/main/wails/permission/permission.go#L55>)
+### func \(\*PermissionPlugin\) [Check](<https://github.com/its-ernest/wails-mobile/blob/main/plugins/permission/permission.go#L55>)
 
 ```go
 func (p *PermissionPlugin) Check(permission string) (string, error)
@@ -48,7 +48,7 @@ func (p *PermissionPlugin) Check(permission string) (string, error)
 Check queries the status of a specific permission synchronously. Example permission: "android.permission.CAMERA"
 
 <a name="PermissionPlugin.Init"></a>
-### func \(\*PermissionPlugin\) [Init](<https://github.com/its-ernest/wails-mobile/blob/main/wails/permission/permission.go#L30>)
+### func \(\*PermissionPlugin\) [Init](<https://github.com/its-ernest/wails-mobile/blob/main/plugins/permission/permission.go#L30>)
 
 ```go
 func (p *PermissionPlugin) Init(app *wails.Application) error
@@ -57,7 +57,7 @@ func (p *PermissionPlugin) Init(app *wails.Application) error
 Init initializes the plugin with the Wails application context and registers the "permissions:result" native callback handler.
 
 <a name="PermissionPlugin.Name"></a>
-### func \(\*PermissionPlugin\) [Name](<https://github.com/its-ernest/wails-mobile/blob/main/wails/permission/permission.go#L24>)
+### func \(\*PermissionPlugin\) [Name](<https://github.com/its-ernest/wails-mobile/blob/main/plugins/permission/permission.go#L24>)
 
 ```go
 func (p *PermissionPlugin) Name() string
@@ -66,7 +66,7 @@ func (p *PermissionPlugin) Name() string
 Name returns the plugin name "permissions".
 
 <a name="PermissionPlugin.Request"></a>
-### func \(\*PermissionPlugin\) [Request](<https://github.com/its-ernest/wails-mobile/blob/main/wails/permission/permission.go#L68>)
+### func \(\*PermissionPlugin\) [Request](<https://github.com/its-ernest/wails-mobile/blob/main/plugins/permission/permission.go#L68>)
 
 ```go
 func (p *PermissionPlugin) Request(permission string) (string, error)

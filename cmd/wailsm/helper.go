@@ -12,8 +12,8 @@ import (
 	"strings"
 )
 
-// --- Engine Helper Functions ---
-
+// parseAndroidINI reads system instructions from local .ini configuration matrices.
+// It automatically normalizes Windows-style trailing carriage lines (\r\n).
 func parseAndroidINI() {
 	iniFile := "android.ini"
 	if !fileExists(iniFile) {
@@ -56,6 +56,7 @@ func parseAndroidINI() {
 	}
 }
 
+// runCmd spawns an OS sub-process linking stdout/stderr pipelines directly to the terminal shell.
 func runCmd(name string, args ...string) {
 	cmd := exec.Command(name, args...)
 	cmd.Stdout = os.Stdout
@@ -65,6 +66,7 @@ func runCmd(name string, args ...string) {
 	}
 }
 
+// downloadFile gets an network asset via HTTP GET and streams bytes onto local storage.
 func downloadFile(url, dest string) error {
 	resp, err := http.Get(url)
 	if err != nil {
@@ -86,6 +88,7 @@ func downloadFile(url, dest string) error {
 	return err
 }
 
+// unzipTarget decompresses architectural zip packages while protecting against Zip Slip vulnerabilities.
 func unzipTarget(src, dest string) error {
 	r, err := zip.OpenReader(src)
 	if err != nil {
@@ -95,6 +98,7 @@ func unzipTarget(src, dest string) error {
 
 	for _, f := range r.File {
 		fpath := filepath.Join(dest, f.Name)
+		// Zip Slip Vulnerability Guard
 		if !strings.HasPrefix(fpath, filepath.Clean(dest)+string(os.PathSeparator)) {
 			return fmt.Errorf("illegal file path output breaking bounds constraints: %s", fpath)
 		}
@@ -129,6 +133,7 @@ func unzipTarget(src, dest string) error {
 	return nil
 }
 
+// copyDirectory recursively parses directory trees and duplicates contents across targets.
 func copyDirectory(scrDir, destDir string) error {
 	return filepath.Walk(scrDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -161,6 +166,7 @@ func copyDirectory(scrDir, destDir string) error {
 	})
 }
 
+// fileExists validates if a specific file artifact is accessible on disk.
 func fileExists(filename string) bool {
 	info, err := os.Stat(filename)
 	if os.IsNotExist(err) {
@@ -169,6 +175,7 @@ func fileExists(filename string) bool {
 	return !info.IsDir()
 }
 
+// dirExists checks for the existence of a valid directory segment.
 func dirExists(dirname string) bool {
 	info, err := os.Stat(dirname)
 	if os.IsNotExist(err) {
@@ -177,6 +184,7 @@ func dirExists(dirname string) bool {
 	return info.IsDir()
 }
 
+// dirEmpty determines if a folder contains downstream data assets.
 func dirEmpty(name string) bool {
 	f, err := os.Open(name)
 	if err != nil {
@@ -188,6 +196,19 @@ func dirEmpty(name string) bool {
 	return err == io.EOF
 }
 
+// listDirectoryContents acts as a platform-agnostic alternative to 'ls -1'.
+func listDirectoryContents(dirPath string) {
+	files, err := os.ReadDir(dirPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Notice: Could not scan contents of directory %s\n", dirPath)
+		return
+	}
+	for _, f := range files {
+		fmt.Println(f.Name())
+	}
+}
+
+// fatal dumps an error block to stderr and forces runtime termination.
 func fatal(message string, err error) {
 	fmt.Fprintf(os.Stderr, "Fatal Error: %s: %v\n", message, err)
 	os.Exit(1)

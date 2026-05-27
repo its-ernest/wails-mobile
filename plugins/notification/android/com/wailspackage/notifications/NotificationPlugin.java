@@ -83,4 +83,5 @@ public class NotificationPlugin implements WailsPlugin {
 
     @Override public void onRequestPermissionsResult(int rc, String[] p, int[] g) {}
     @Override public void onActivityResult(int r, int rc, Intent d) {}
+    @Override public void onNewIntent(Intent intent) {}
 }

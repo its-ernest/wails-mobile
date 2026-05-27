@@ -13,4 +13,4 @@ require (
 
 tool golang.org/x/mobile/cmd/gobind
 
-//replace github.com/its-ernest/wails-mobile v1.0.4 => ../../
+replace github.com/its-ernest/wails-mobile v1.0.5 => ../../

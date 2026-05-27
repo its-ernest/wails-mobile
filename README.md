@@ -4,10 +4,11 @@ Wails Mobile is a port of Go v3 implementation to support mobile devies.
 
 Gradle support: `Gradle 9.2.1` by default. You can change the version to your Gradle version
 
-<p>
-<img alt="Example UI" src="./hello-example.jpg" width="200" />
-<img alt="Notification plugin" src="./notification-example.jpg" width="200" />
-</p>
+<div style="display: flex; flex-direction: row; overflow-x: auto; white-space: nowrap; gap: 10px; max-width: 100%;">
+  <img alt="Example UI" src="./hello-example.jpg" width="200" style="flex: 0 0 auto;" />
+  <img alt="Notification plugin" src="./notification-example.jpg" width="200" style="flex: 0 0 auto;" />
+  <img alt="output-console" src="./screenshot-output.jpg" width="200" style="flex: 0 0 auto;" />
+</div>
 
 ## Overview
 
@@ -112,7 +113,7 @@ wailsm --remove github.com/<handle>/<plugin>
 
 You can design an external plugin to be integrated into Wails Mobile application, or even write some app-specific native Java or Swift code and call it from Go. 
 
-Instructions on achieving this goal is wired in [`plugins/PLUGINS.md`](plugins/PLUGINS.md)
+Instructions on achieving this goal is wired in [`plugins/PLUGINS_DOCS.md`](plugins/PLUGINS_DOCS.md)
 
 ---
 
@@ -121,6 +122,7 @@ Instructions on achieving this goal is wired in [`plugins/PLUGINS.md`](plugins/P
 - `plugins/logger`: This plugin is better suited to make logs appear in ADB logcat or native logs for easier debugging
 - `plugins/notification`: Provides methods for your app to **Show Notifications**
 - `plugins/permission`: This plugin provides capability to check and request **Runtime Permissions** on mobile from frontend or Go directly
+- `plugins/devicestate`: Exposes battery, power mode, temperature, and connectivity state from Android
 - `pluginis/workmanager`: Makes your app capable of running **Periodic Background Tasks** even when UI is detached or swiped away
 
 ## To uninstall
@@ -132,6 +134,18 @@ sudo rm -rf /usr/local/bin/wailsm
 
 ## Notes
 
+- Your root package name must be `wailsmobile`. Example `main.go`:
+  ```go
+  package wailsmobile
+
+    import (
+        "embed"
+        "fmt"
+        "time"
+        //...
+    )
+    // rest of code
+  ```
 - The WebView frontend uses `WailsBind.callGo(...)` to invoke the Go backend.
 - Currently, `wails-mobile` is stable enough for Android builds. If you care to get support for iOS sooner, contribute by translating the Java project into Swift project. 
 - The core bridge in Go is cross-platform(`Android` and `iOS`). No writing of JNI. No writing of **`C`** code and headers. 

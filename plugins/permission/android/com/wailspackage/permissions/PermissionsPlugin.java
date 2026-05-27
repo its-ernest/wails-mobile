@@ -77,6 +77,7 @@ public class PermissionsPlugin implements WailsPlugin {
     }
 
     @Override public void onActivityResult(int r, int rc, Intent d) {}
+    @Override public void onNewIntent(Intent intent) {}
 
     private String parsePermissionFromJson(String json) {
         try {

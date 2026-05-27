@@ -11,17 +11,44 @@ tasks:
       - task --list
 
   docs:
-    desc: Generate markdown documentation for all Go packages
+    desc: Generate individual DOCS.md files surgically based on your host operating system
     preconditions:
       - sh: 'command -v gomarkdoc >/dev/null 2>&1'
         msg: "gomarkdoc is required but not installed. Run: go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest"
     cmds:
-      - echo "Generating documentation..."
-      - gomarkdoc -o "./DOCS.md" ./wails/...
-      - echo "Documentation generated in respective directories."
+      # Automatically routes to the matching operating system execution pattern
+      - echo "Detecting host operating system environment... [Host OS:{{OS}}]"
+      - defer: echo "Documentation generation pass completed."
+      - |-
+        {{if eq OS "windows"}}
+          task: docs-windows
+        {{else}}
+          task: docs-unix
+        {{end}}
+
+  docs-unix:
+    internal: true
+    platforms: [linux, darwin]
+    cmds:
+      - echo "Executing Unix find pipeline..."
+      - |
+        for dir in $(find . -name "*.go" -not -path "*/.*" | xargs -I {} dirname {} | sort -u); do
+          echo "Processing package: ${dir}"
+          gomarkdoc -o "${dir}/DOCS.md" "${dir}"
+        done
+
+  docs-windows:
+    internal: true
+    platforms: [windows]
+    cmds:
+      - echo "Executing native Windows PowerShell directory harvesting loop..."
+      # This uses native PowerShell syntax to recursively find directories holding .go files, 
+      # isolates unique folders, and passes them straight to gomarkdoc.
+      - powershell -Command "Get-ChildItem -Recurse -Filter *.go | Where-Object { \$_.FullName -notlike '*\.*' } | ForEach-Object { Split-Path \$_.FullName -Parent } | Select-Object -Unique | ForEach-Object { Write-Host 'Processing package:' \$_; gomarkdoc -o \"\$_/DOCS.md\" \$_ }"
 
   wailsm-sh:
-    desc: Compile the legacy shell-script helper binary using shc
+    desc: Compile the legacy shell-script helper binary using shc (Unix only)
+    platforms: [linux, darwin]
     preconditions:
       - sh: 'command -v shc >/dev/null 2>&1'
         msg: "shc utility is required to compile shell scripts into binaries."
@@ -36,6 +63,7 @@ tasks:
     desc: Cross-compile the Go-based wailsm toolchain CLI for Linux, macOS, and Windows
     cmds:
       - echo "Building wails-mobile production Go CLI engine..."
+      - mkdir -p dist/linux dist/darwin dist/windows
       
       # Cross-compiling for Linux target architectures
       - GOOS=linux GOARCH=amd64 go build -o dist/linux/{{.CLI_NAME}} {{.SRC_PATH}}
@@ -49,6 +77,15 @@ tasks:
       - echo "All production cross-compilation binaries staged inside ./dist/"
 
   clean:
-    desc: Clean up build artifacts and binaries
+    desc: Clean up build artifacts, binaries, and generated DOCS.md files across platforms
     cmds:
+      - echo "Cleaning build distributions..."
       - rm -rf ./dist/
+      - echo "Removing scattered DOCS.md files..."
+      - |-
+        {{if eq OS "windows"}}
+          powershell -Command "Get-ChildItem -Recurse -Filter DOCS.md | Remove-Item -Force"
+        {{else}}
+          find . -name "DOCS.md" -type f -delete
+        {{end}}
+      - echo "Cleanup process complete."

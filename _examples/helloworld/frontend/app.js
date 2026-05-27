@@ -1,100 +1,115 @@
 /**
- * app.js - User Application Logic
+ * app.js - Plugin Verification Logic
  */
 function updateOutput(text) {
-    document.getElementById('output').textContent = text;
+    const output = document.getElementById('output');
+    output.textContent = `[${new Date().toLocaleTimeString()}] ${text}\n` + output.textContent;
 }
 
 window.addEventListener('DOMContentLoaded', () => {
 
-    document.getElementById('send').addEventListener('click', async () => {
-        const name = document.getElementById('name').value;
-        try {
-            const result = await Wails.CallGo('AppService.SayHello', name);
-            updateOutput(result.message);
-        } catch (err) {
-            updateOutput(`Error: ${err.message}`);
-        }
-    });
-
-    document.getElementById('check-perm').addEventListener('click', async () => {
-        try {
-            const result = await Wails.CallGo('PermissionPlugin.Check', "android.permission.CAMERA");
-            // Go returns the raw string from Java
-            const parsed = JSON.parse(result);
-            updateOutput(`Camera Status: ${parsed.status}`);
-        } catch (err) {
-            updateOutput(`Error: ${err.message}`);
-        }
-    });
-
-    document.getElementById('check-notif').addEventListener('click', async () => {
-        try {
-            const result = await Wails.CallGo('PermissionPlugin.Check', "android.permission.POST_NOTIFICATIONS");
-            // Go returns the raw string from Java
-            const parsed = JSON.parse(result);
-            updateOutput(`Notif Status: ${parsed.status}`);
-        } catch (err) {
-            updateOutput(`Error: ${err.message}`);
-        }
-    });
-
-    document.getElementById('request-perm').addEventListener('click', async () => {
-        try {
-            await Wails.CallGo('PermissionPlugin.Request', "android.permission.CAMERA");
-            updateOutput("Requested camera... check the system dialog.");
-        } catch (err) {
-            updateOutput(`Error: ${err.message}`);
-        }
-    });
+    // --- Section 1: Notifications ---
 
     document.getElementById('request-notif').addEventListener('click', async () => {
         try {
             await Wails.CallGo('PermissionPlugin.Request', "android.permission.POST_NOTIFICATIONS");
-            updateOutput("Requested notification... check the system dialog.");
+            updateOutput("Requested notification permission.");
         } catch (err) {
             updateOutput(`Error: ${err.message}`);
         }
     });
 
-    document.getElementById('ping').addEventListener('click', async () => {
+    document.getElementById('send-notif').addEventListener('click', async () => {
         try {
-            const result = await Wails.CallGo('AppService.Ping');
-            updateOutput(`Bridge Ping: ${result.status}`);
-        } catch (err) {
-            updateOutput(`Error: ${err.message}`);
-        }
-    });
-
-    document.getElementById('enqueue-work').addEventListener('click', async () => {
-        try {
-            const result = await Wails.CallGo('AppService.EnqueuePeriodic');
-            const parsed = JSON.parse(result);
-            updateOutput(`Work Enqueued: ${parsed.status} (ID: ${parsed.id})`);
-        } catch (err) {
-            updateOutput(`Error: ${err.message}`);
-        }
-    });
-
-    document.getElementById('notify').addEventListener('click', async () => {
-        try {
-            // Passing ID: 0 (or omitting it) will now generate a unique notification instead of overwriting
             const result = await Wails.CallGo('NotificationPlugin.Post', {
-                id: 30,
-                title: "Unique Notification",
-                body: "This won't overwrite previous ones unless they share the same ID.",
+                id: 0,
+                title: "Wails Mobile",
+                body: "This is a unique verification notification.",
                 importance: "HIGH"
             });
-            const parsed = JSON.parse(result);
-            updateOutput(`Notification Posted: ID ${parsed.id}`);
+            // Result is a JSON string from Go because it calls CallNativePlatform
+            const parsed = typeof result === 'string' ? JSON.parse(result) : result;
+            updateOutput(`Notification posted (ID: ${parsed.id})`);
         } catch (err) {
             updateOutput(`Error: ${err.message}`);
         }
     });
 
-    // 4. Event Listener
-    Wails.on('permissions:changed', (data) => {
-        console.log("EVENT RECEIVED:", data);
-        updateOutput(`ASYNC EVENT: Permission for ${data.permission} was ${data.granted ? 'GRANTED' : 'DENIED'}`);
+
+    // --- Section 2: Biometrics ---
+
+    document.getElementById('check-bio').addEventListener('click', async () => {
+        try {
+            const res = await Wails.CallGo('BiometricPlugin.CanAuthenticate');
+            updateOutput(`Biometric Status: ${res.status} (Available: ${res.can_authenticate})`);
+        } catch (err) {
+            updateOutput(`Error: ${err.message}`);
+        }
     });
+
+    document.getElementById('auth-bio').addEventListener('click', async () => {
+        try {
+            updateOutput("Starting biometric authentication...");
+            await Wails.CallGo('BiometricPlugin.Authenticate', {
+                title: "Verify Identity",
+                subtitle: "Confirm biometric to proceed",
+                description: "This test ensures the native prompt bridge is working.",
+                negative_button_text: "Cancel"
+            });
+        } catch (err) {
+            updateOutput(`Error: ${err.message}`);
+        }
+    });
+
+
+    // --- Section 3: File Picker ---
+
+    document.getElementById('pick-image').addEventListener('click', async () => {
+        try {
+            updateOutput("Opening image picker...");
+            await Wails.CallGo('FilePickerPlugin.PickFile', {
+                mime_type: "image/*",
+                multiple: true
+            });
+        } catch (err) {
+            updateOutput(`Error: ${err.message}`);
+        }
+    });
+
+    document.getElementById('pick-files').addEventListener('click', async () => {
+        try {
+            updateOutput("Opening multi-file picker...");
+            await Wails.CallGo('FilePickerPlugin.PickFile', {
+                mime_type: "*/*",
+                multiple: true
+            });
+        } catch (err) {
+            updateOutput(`Error: ${err.message}`);
+        }
+    });
+
+
+    // --- Event Listeners ---
+
+    Wails.on('biometric:result', (result) => {
+        updateOutput(`BIOMETRIC EVENT: ${result.status} (Success: ${result.success})`);
+        if (result.error) updateOutput(`Detail: ${result.error}`);
+    });
+
+    Wails.on('filepicker:result', (result) => {
+        if (result.error) {
+            updateOutput(`FILEPICKER EVENT: ${result.error}`);
+            return;
+        }
+        if (result.multiple) {
+            updateOutput(`FILEPICKER EVENT: Selected ${result.uris.length} files`);
+        } else {
+            updateOutput(`FILEPICKER EVENT: Selected ${result.uri}`);
+        }
+    });
+
+    Wails.on('permissions:changed', (data) => {
+        updateOutput(`PERMISSION EVENT: ${data.permission} is ${data.granted ? 'GRANTED' : 'DENIED'}`);
+    });
+
 });

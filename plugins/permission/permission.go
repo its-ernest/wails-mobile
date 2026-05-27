@@ -60,7 +60,13 @@ func (p *PermissionPlugin) Check(permission string) (string, error) {
 	// Use CallNativePlatform to call into the Android Java bridge.
 	// This is Go calling Java.
 	result := wails.CallNativePlatform("permissions:check", string(payload))
-	return result, nil
+	// convert result into a string status rather than "{status: granted}"
+	var resultMap map[string]interface{}
+	json.Unmarshal([]byte(result), &resultMap)
+	if status, ok := resultMap["status"].(string); ok {
+		return status, nil
+	}
+	return "unknown", nil
 }
 
 // Request triggers a native permission request dialog on Android.

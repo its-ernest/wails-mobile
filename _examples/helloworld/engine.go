@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/its-ernest/wails-mobile/plugins/biometric"
+	"github.com/its-ernest/wails-mobile/plugins/filepicker"
 	"github.com/its-ernest/wails-mobile/plugins/logger"
 	"github.com/its-ernest/wails-mobile/plugins/notification"
 	"github.com/its-ernest/wails-mobile/plugins/permission"
@@ -17,10 +19,12 @@ var assets embed.FS
 
 // Global plugin instances
 var (
-	permPlugin   = permission.NewPlugin()
-	wmPlugin     = workmanager.NewPlugin()
-	notifyPlugin = notification.NewPlugin()
-	log          = logger.NewPlugin("HelloWorld")
+	permPlugin      = permission.NewPlugin()
+	wmPlugin        = workmanager.NewPlugin()
+	notifyPlugin    = notification.NewPlugin()
+	biometricPlugin = biometric.NewPlugin()
+	filePicker      = filepicker.NewPlugin()
+	log             = logger.NewPlugin("[Wails Mobile]")
 )
 
 // NativeCallHandler is an interface that Java can implement to handle calls from Go.
@@ -39,13 +43,15 @@ func StartApplication() string {
 	helloService := NewAppService()
 
 	app := wails.NewApplication(wails.Options{
-		Name:   "HelloWorld",
+		Name:   "Wails Mobile",
 		Assets: assets,
 		Bind: []interface{}{
 			helloService,
 			permPlugin,
 			wmPlugin,
 			notifyPlugin,
+			biometricPlugin,
+			filePicker,
 		},
 		OnStart: func(app *wails.Application) error {
 			// Initialize plugins
@@ -59,6 +65,12 @@ func StartApplication() string {
 				return err
 			}
 			if err := notifyPlugin.Init(app); err != nil {
+				return err
+			}
+			if err := biometricPlugin.Init(app); err != nil {
+				return err
+			}
+			if err := filePicker.Init(app); err != nil {
 				return err
 			}
 
@@ -76,11 +88,17 @@ func StartApplication() string {
 				return nil
 			})
 
+			// Schedule the background task to run every 15 minutes after a 30-second delay
 			time.AfterFunc(30*time.Second, func() {
-				log.Debug("Enqueuing periodic background work...")
-				wmPlugin.EnqueuePeriodic("sync_analytics", 15, &workmanager.Constraints{
-					NetworkType: workmanager.NetworkNotRequired,
-				})
+				if status, err := permPlugin.Check("android.permission.POST_NOTIFICATIONS"); status != "granted" {
+					log.Error("Permission check failed: %v", err)
+					log.Info("Status: %s", status)
+				} else {
+					log.Debug("Enqueuing periodic background work...")
+					wmPlugin.EnqueuePeriodic("sync_analytics", 15, &workmanager.Constraints{
+						NetworkType: workmanager.NetworkNotRequired,
+					})
+				}
 			})
 
 			return nil

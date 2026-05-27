@@ -34,6 +34,7 @@ android {
 
 dependencies {
     implementation libs.appcompat
+    implementation libs.biometric
     implementation libs.material
     implementation libs.work.runtime
     testImplementation libs.junit

@@ -2,6 +2,9 @@ package com.example.wailsmobile;
 
 import android.app.Application;
 import com.wailsplugin.WailsPlugin;
+import com.wailspackage.biometric.BiometricPlugin;
+import com.wailspackage.devicestate.DeviceStatePlugin;
+import com.wailspackage.filepicker.FilePickerPlugin;
 import com.wailspackage.logger.LoggerPlugin;
 import com.wailspackage.notifications.NotificationPlugin;
 import com.wailspackage.permissions.PermissionsPlugin;
@@ -25,6 +28,9 @@ public class WailsApplication extends Application {
         registerPlugin(new WorkManagerPlugin());
         registerPlugin(new NotificationPlugin());
         registerPlugin(new LoggerPlugin());
+        registerPlugin(new DeviceStatePlugin());
+        registerPlugin(new BiometricPlugin());
+        registerPlugin(new FilePickerPlugin());
 
         // Register the global handler for Go-to-Native calls
         Wailsmobile.setNativeCallHandler(new wailsmobile.NativeCallHandler() {
