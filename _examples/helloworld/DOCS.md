@@ -24,7 +24,7 @@ import "helloworld"
 
 
 <a name="HandleMessageFromFrontend"></a>
-## func [HandleMessageFromFrontend](<https://github.com/its-ernest/wails-mobile/blob/main/_examples/helloworld/engine.go#L101>)
+## func [HandleMessageFromFrontend](<https://github.com/its-ernest/wails-mobile/blob/main/_examples/helloworld/engine.go#L119>)
 
 ```go
 func HandleMessageFromFrontend(methodKey string, jsonArgsPayload string) string
@@ -33,7 +33,7 @@ func HandleMessageFromFrontend(methodKey string, jsonArgsPayload string) string
 HandleMessageFromFrontend processes messages sent from the JavaScript frontend.
 
 <a name="HandleNativeAction"></a>
-## func [HandleNativeAction](<https://github.com/its-ernest/wails-mobile/blob/main/_examples/helloworld/engine.go#L106>)
+## func [HandleNativeAction](<https://github.com/its-ernest/wails-mobile/blob/main/_examples/helloworld/engine.go#L124>)
 
 ```go
 func HandleNativeAction(methodKey string, jsonArgsPayload string) string
@@ -42,7 +42,7 @@ func HandleNativeAction(methodKey string, jsonArgsPayload string) string
 HandleNativeAction processes calls from Go to Java and returns the result back to Go.
 
 <a name="PollNativeEvent"></a>
-## func [PollNativeEvent](<https://github.com/its-ernest/wails-mobile/blob/main/_examples/helloworld/engine.go#L120>)
+## func [PollNativeEvent](<https://github.com/its-ernest/wails-mobile/blob/main/_examples/helloworld/engine.go#L138>)
 
 ```go
 func PollNativeEvent() string
@@ -51,7 +51,7 @@ func PollNativeEvent() string
 PollNativeEvent allows Go to check for any events sent from Java and retrieve them as a JSON string.
 
 <a name="RequestAssetBytes"></a>
-## func [RequestAssetBytes](<https://github.com/its-ernest/wails-mobile/blob/main/_examples/helloworld/engine.go#L110>)
+## func [RequestAssetBytes](<https://github.com/its-ernest/wails-mobile/blob/main/_examples/helloworld/engine.go#L128>)
 
 ```go
 func RequestAssetBytes(urlPath string) []byte
@@ -60,7 +60,7 @@ func RequestAssetBytes(urlPath string) []byte
 
 
 <a name="RequestAssetMime"></a>
-## func [RequestAssetMime](<https://github.com/its-ernest/wails-mobile/blob/main/_examples/helloworld/engine.go#L115>)
+## func [RequestAssetMime](<https://github.com/its-ernest/wails-mobile/blob/main/_examples/helloworld/engine.go#L133>)
 
 ```go
 func RequestAssetMime(urlPath string) string
@@ -69,7 +69,7 @@ func RequestAssetMime(urlPath string) string
 RequestAssetMime retrieves the MIME type for a given asset path.
 
 <a name="SetNativeCallHandler"></a>
-## func [SetNativeCallHandler](<https://github.com/its-ernest/wails-mobile/blob/main/_examples/helloworld/engine.go#L33>)
+## func [SetNativeCallHandler](<https://github.com/its-ernest/wails-mobile/blob/main/_examples/helloworld/engine.go#L37>)
 
 ```go
 func SetNativeCallHandler(handler NativeCallHandler)
@@ -78,7 +78,7 @@ func SetNativeCallHandler(handler NativeCallHandler)
 SetNativeCallHandler registers the Java\-side handler for Go\-to\-Native calls.
 
 <a name="StartApplication"></a>
-## func [StartApplication](<https://github.com/its-ernest/wails-mobile/blob/main/_examples/helloworld/engine.go#L38>)
+## func [StartApplication](<https://github.com/its-ernest/wails-mobile/blob/main/_examples/helloworld/engine.go#L42>)
 
 ```go
 func StartApplication() string
@@ -132,7 +132,7 @@ func (s *AppService) SayHello(name string) (map[string]string, error)
 
 
 <a name="NativeCallHandler"></a>
-## type [NativeCallHandler](<https://github.com/its-ernest/wails-mobile/blob/main/_examples/helloworld/engine.go#L28-L30>)
+## type [NativeCallHandler](<https://github.com/its-ernest/wails-mobile/blob/main/_examples/helloworld/engine.go#L32-L34>)
 
 NativeCallHandler is an interface that Java can implement to handle calls from Go. Defining it here ensures gomobile generates it in the 'wailsmobile' Java package.
 

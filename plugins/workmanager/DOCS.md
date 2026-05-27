@@ -18,6 +18,7 @@ import "github.com/its-ernest/wails-mobile/plugins/workmanager"
   - [func \(p \*WorkManagerPlugin\) EnqueueOneTime\(taskKey string, constraints \*Constraints\) \(string, error\)](<#WorkManagerPlugin.EnqueueOneTime>)
   - [func \(p \*WorkManagerPlugin\) EnqueuePeriodic\(taskKey string, intervalMinutes int, constraints \*Constraints\) \(string, error\)](<#WorkManagerPlugin.EnqueuePeriodic>)
   - [func \(p \*WorkManagerPlugin\) Init\(app \*wails.Application\) error](<#WorkManagerPlugin.Init>)
+  - [func \(p \*WorkManagerPlugin\) IsEnqueued\(taskKey string\) \(bool, error\)](<#WorkManagerPlugin.IsEnqueued>)
   - [func \(p \*WorkManagerPlugin\) Name\(\) string](<#WorkManagerPlugin.Name>)
   - [func \(p \*WorkManagerPlugin\) RegisterTask\(name string, fn TaskFunc\)](<#WorkManagerPlugin.RegisterTask>)
 
@@ -96,7 +97,7 @@ func NewPlugin() *WorkManagerPlugin
 NewPlugin creates a new instance of the WorkManager plugin.
 
 <a name="WorkManagerPlugin.CancelAll"></a>
-### func \(\*WorkManagerPlugin\) [CancelAll](<https://github.com/its-ernest/wails-mobile/blob/main/plugins/workmanager/workmanager.go#L130>)
+### func \(\*WorkManagerPlugin\) [CancelAll](<https://github.com/its-ernest/wails-mobile/blob/main/plugins/workmanager/workmanager.go#L150>)
 
 ```go
 func (p *WorkManagerPlugin) CancelAll() string
@@ -130,6 +131,15 @@ func (p *WorkManagerPlugin) Init(app *wails.Application) error
 ```
 
 Init initializes the plugin and registers the execution handler for native calls.
+
+<a name="WorkManagerPlugin.IsEnqueued"></a>
+### func \(\*WorkManagerPlugin\) [IsEnqueued](<https://github.com/its-ernest/wails-mobile/blob/main/plugins/workmanager/workmanager.go#L130>)
+
+```go
+func (p *WorkManagerPlugin) IsEnqueued(taskKey string) (bool, error)
+```
+
+IsEnqueued checks if a task with the given key is currently enqueued or running.
 
 <a name="WorkManagerPlugin.Name"></a>
 ### func \(\*WorkManagerPlugin\) [Name](<https://github.com/its-ernest/wails-mobile/blob/main/plugins/workmanager/workmanager.go#L55>)

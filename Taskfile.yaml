@@ -16,15 +16,9 @@ tasks:
       - sh: 'command -v gomarkdoc >/dev/null 2>&1'
         msg: "gomarkdoc is required but not installed. Run: go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest"
     cmds:
-      # Automatically routes to the matching operating system execution pattern
       - echo "Detecting host operating system environment... [Host OS:{{OS}}]"
       - defer: echo "Documentation generation pass completed."
-      - |-
-        {{if eq OS "windows"}}
-          task: docs-windows
-        {{else}}
-          task: docs-unix
-        {{end}}
+      - task: '{{if eq OS "windows"}}docs-windows{{else}}docs-unix{{end}}'
 
   docs-unix:
     internal: true

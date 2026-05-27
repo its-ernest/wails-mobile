@@ -66,7 +66,7 @@ func (p *PermissionPlugin) Name() string
 Name returns the plugin name "permissions".
 
 <a name="PermissionPlugin.Request"></a>
-### func \(\*PermissionPlugin\) [Request](<https://github.com/its-ernest/wails-mobile/blob/main/plugins/permission/permission.go#L68>)
+### func \(\*PermissionPlugin\) [Request](<https://github.com/its-ernest/wails-mobile/blob/main/plugins/permission/permission.go#L74>)
 
 ```go
 func (p *PermissionPlugin) Request(permission string) (string, error)
