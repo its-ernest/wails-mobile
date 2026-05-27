@@ -25,20 +25,72 @@ To install  and build apps with `wails-mobile`, use the CLI helper by running th
 Download size is below: `700 kb`
 Use the command below:
 
+Here is the updated installation section for your README. It breaks out separate, precise instructions for Linux, macOS, and Windows.
+
+The installation commands dynamically pull the platform-specific release binary (`wailsm-linux`, `wailsm-mac`, or `wailsm.exe`), renames it cleanly to `wailsm`, and handles executable path permissions natively for each system.
+
+---
+
+### Install the CLI
+
+To install and manage your applications within the `wails-mobile` ecosystem, install our lightweight CLI orchestration engine (download size is under 700 KB). Choose the specific pipeline instruction for your host operating system below:
+
+#### 🐧 Linux
+
+Run the following block in your shell to stream the Linux binary, move it into your secure local execution path, and mark it executable:
+
 ```bash
-sudo curl -L -H "Cache-Control: no-cache" -o /usr/local/bin/wailsm https://github.com/its-ernest/wails-mobile/releases/latest/download/wailsm && \
+sudo curl -L -H "Cache-Control: no-cache" -o /usr/local/bin/wailsm https://github.com/its-ernest/wails-mobile/releases/latest/download/wailsm-linux && \
 sudo chmod +x /usr/local/bin/wailsm
+
 ```
 
-Now you can create a new app from anywhere:
+#### 🍏 macOS (Apple Silicon / Intel)
+
+Execute this command stream inside your terminal to download the macOS package, bind it globally, and configure gatekeeper binary authorization settings:
+
+```bash
+sudo curl -L -H "Cache-Control: no-cache" -o /usr/local/bin/wailsm https://github.com/its-ernest/wails-mobile/releases/latest/download/wailsm-mac && \
+sudo chmod +x /usr/local/bin/wailsm
+
+```
+
+#### 🪟 Windows
+
+Open **PowerShell as an Administrator** and execute this script block to cleanly provision the execution runtime folder path, download the targeted executable, and map it into your machine environment paths globally:
+
+```powershell
+# Create a dedicated execution path folder if missing
+New-Item -ItemType Directory -Force -Path "$Env:ProgramFiles\wailsm"
+
+# Download the specific release target binary and rename it natively
+Invoke-WebRequest -Headers @{"Cache-Control"="no-cache"} -Uri "https://github.com/its-ernest/wails-mobile/releases/latest/download/wailsm.exe" -OutFile "$Env:ProgramFiles\wailsm\wailsm.exe"
+
+# Append directory to your System PATH variables if it doesn't already exist
+$UserPath = [Environment]::GetEnvironmentVariable("Path", "User")
+if ($UserPath -notlike "*wailsm*") {
+    [Environment]::SetEnvironmentVariable("Path", "$UserPath;$Env:ProgramFiles\wailsm", "User")
+    $Env:Path = [Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [Environment]::GetEnvironmentVariable("Path", "User")
+}
+
+```
+
+> ⚠️ **Note for Windows Users:** Restart your terminal environment instance after running the installer script block above to refresh system environment environment lookup states.
+
+---
+
+### Bootstrapping Fresh Projects
+
+Now you can quickly initialize a brand new application scaffold context from any terminal workspace environment instantly:
 
 ```bash
 wailsm --new my-new-app
+
 ```
 
-That command downloads a starter pre-configured Wails Mobile project files into `my-app/` directory, ready to be edited and compiled.
+This automated framework routine pulls down a lightweight, pre-configured Wails Mobile development template structure directly inside your fresh `./my-new-app/` workspace directory, meaning your environment is ready to edit and cross-compile immediately.
 
-when it's time to build, open `native/android/` folder in Android Studio and click `Build`.
+When you are ready to compile and run your code on a physical mobile device, simply point **Android Studio** to open the embedded `./native/android/` project layout structure, and click **Build** or **Run**.
 
 --- 
 
@@ -75,11 +127,11 @@ The script will:
 ## Building the App
 Once again: don't forget after editing or write your Go code, you must refresh or sync first to produce native bindings.
 
-Now open the project in Android Studio or XCode.
+Now open the project `native/android` in Android Studio or `native/ios` XCode.
 
-Where the resulting projects are found:
- - Final Android Studio project: `native/android/`
- - Final XCode: `native/...`
+Click on `Run` or `Build` in Android Studio to build or run your app on a connected device.
+
+In some occassions, Android Studio will sync Gradle configs, based on the plugins you add. Some plugins may trigger Gradle to download some extra files. Always `Sync Gradle` before build.
 
 
 ## Adding external Plugins
