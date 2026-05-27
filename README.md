@@ -167,10 +167,45 @@ Instructions on achieving this goal is wired in [`plugins/PLUGINS_DOCS.md`](plug
 
 ## To uninstall
 
+### 🐧 Linux
+
+Run this command in your terminal to remove the global binary link:
+
 ```bash
-sudo rm -rf /usr/local/bin/wailsm
+sudo rm -f /usr/local/bin/wailsm
+
 ```
 
+### 🍏 macOS
+
+Run this command in your terminal to remove the global binary link:
+
+```bash
+sudo rm -f /usr/local/bin/wailsm
+
+```
+
+### 🪟 Windows
+
+Open PowerShell as an Administrator and execute this script block to cleanly purge the installation directory and strip it out of your User environment PATH values:
+
+```powershell
+# Remove the installation folder and the binary contents entirely
+if (Test-Path "$Env:ProgramFiles\wailsm") {
+    Remove-Item -Recurse -Force "$Env:ProgramFiles\wailsm"
+}
+
+# Clean out the directory entry path definition from the User Environment string matrix variables safely
+$UserPath = [Environment]::GetEnvironmentVariable("Path", "User")
+if ($UserPath -like "*wailsm*") {
+    $PathArray = $UserPath -split ";"
+    $CleanedArray = $PathArray | Where-Object { $_ -notlike "*wailsm*" }
+    $NewUserPath = $CleanedArray -join ";"
+    [Environment]::SetEnvironmentVariable("Path", $NewUserPath, "User")
+    $Env:Path = [Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + $NewUserPath
+}
+
+```
 
 ## Notes
 

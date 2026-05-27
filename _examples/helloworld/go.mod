@@ -2,7 +2,7 @@ module helloworld
 
 go 1.26.3
 
-require github.com/its-ernest/wails-mobile v1.0.5
+require github.com/its-ernest/wails-mobile v1.1.0
 
 require (
 	golang.org/x/mobile v0.0.0-20260520154334-0e4426e1883d // indirect
@@ -13,4 +13,4 @@ require (
 
 tool golang.org/x/mobile/cmd/gobind
 
-replace github.com/its-ernest/wails-mobile v1.0.5 => ../../
+//replace github.com/its-ernest/wails-mobile v1.0.5 => ../../
