@@ -19,12 +19,12 @@ Gradle support: `Gradle 9.2.1` by default. You can change the version to your Gr
 
 ## Quick links
 
-### 1. [Install & Build](docs/INSTALL.md)
-### 2. [CLI reference](docs/CLI.md)
-### 3. [Contributing](docs/CONTRIBUTING.md)
-### 4. [Plugin docs](plugins/PLUGINS.md)
-### 5. [Android plugin guide](plugins/PLUGINS_ANDROID.md)
-### 6. [Example Wails Mobile app](_examples/helloworld/README.md)
+1. [Install & Build](docs/INSTALL.md)
+2. [CLI reference](docs/CLI.md)
+3. [Contributing](docs/CONTRIBUTING.md)
+4. [Plugin docs](plugins/PLUGINS.md)
+5. [Android plugin guide](plugins/PLUGINS_ANDROID.md)
+6. [Example Wails Mobile app](_examples/helloworld/README.md)
 
 ## Requirements
 
