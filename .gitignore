@@ -5,7 +5,7 @@ pkg/
 *.zip
 *.test
 *.out
-*.jar
+#*.jar
 *.aar
 *.so
 /vendor/

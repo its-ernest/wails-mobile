@@ -4,6 +4,7 @@
 package main
 
 import (
+	"encoding/xml"
 	"fmt"
 	"os"
 	"os/exec"
@@ -15,7 +16,7 @@ const (
 	// RepoURL is the upstream repository hosting core templates and codebases.
 	RepoURL = "https://github.com/its-ernest/wails-mobile"
 	// Version matches the designated framework release tag.
-	Version = "v1.0.5"
+	Version = "v1.2.0"
 	// ReleaseAsset is the file package downloaded to bootstrap fresh instances.
 	ReleaseAsset = "template.zip"
 	// DownloadURL maps directly to the compiled archive within GitHub Releases.
@@ -30,6 +31,35 @@ var (
 	AarName        = "wailsmobile.aar"
 	CleanOutput    = "true"
 )
+
+// XML structures used to hunt down application package names for headless launches.
+type AndroidManifest struct {
+	XMLName     xml.Name    `xml:"manifest"`
+	PackageName string      `xml:"package,attr"`
+	Application Application `xml:"application"`
+}
+
+type Application struct {
+	Activities []Activity `xml:"activity"`
+}
+
+type Activity struct {
+	Name          string         `xml:"http://schemas.android.com/apk/res/android name,attr"`
+	IntentFilters []IntentFilter `xml:"intent-filter"`
+}
+
+type IntentFilter struct {
+	Actions    []Action   `xml:"action"`
+	Categories []Category `xml:"category"`
+}
+
+type Action struct {
+	Name string `xml:"http://schemas.android.com/apk/res/android name,attr"`
+}
+
+type Category struct {
+	Name string `xml:"http://schemas.android.com/apk/res/android name,attr"`
+}
 
 func main() {
 	if len(os.Args) < 2 {
@@ -49,6 +79,18 @@ func main() {
 			os.Exit(1)
 		}
 		executeRefresh(os.Args[2])
+	case "--build":
+		if len(os.Args) < 4 {
+			fmt.Fprintln(os.Stderr, "Error: Missing arguments. Usage: wailsm --build <platform> <debug|release>")
+			os.Exit(1)
+		}
+		executeBuild(os.Args[2], os.Args[3])
+	case "--run":
+		if len(os.Args) < 3 {
+			fmt.Fprintln(os.Stderr, "Error: Please specify a target platform: 'android' or 'ios'")
+			os.Exit(1)
+		}
+		executeRun(os.Args[2])
 	case "--add":
 		if len(os.Args) < 3 {
 			fmt.Fprintln(os.Stderr, "Error: Please provide a valid plugin repository path.")
@@ -69,20 +111,18 @@ func main() {
 	}
 }
 
-// showUsage prints formatted instruction parameters to standard output.
 func showUsage() {
 	fmt.Println("Wails Mobile Toolchain CLI (wailsm)")
 	fmt.Println("Usage:")
 	fmt.Println("  wailsm --new <project_name>        Create a fresh project from the template")
 	fmt.Println("  wailsm --refresh <platform>        Run platform sync: 'android' or 'ios'")
+	fmt.Println("  wailsm --build <platform> <mode>   Compile binaries: 'debug' (APK), 'release' (APK), or 'bundle' (AAB)")
+	fmt.Println("  wailsm --run <platform>            Compile, install, and execute application via ADB")
 	fmt.Println("  wailsm --add <plugin-url>          Install a native Go/Mobile plugin")
 	fmt.Println("  wailsm --remove <plugin-url>       Uninstall a native Go/Mobile plugin")
 	os.Exit(1)
 }
 
-// createNewProject bootstraps a fresh development environment workspace. It queries
-// github for the latest packaged template, unzips files natively, and installs
-// gomobile/gobind developer requirements.
 func createNewProject(targetDir string) {
 	fmt.Fprintf(os.Stdout, "=== Creating Project: %s [%s] ===\n", targetDir, Version)
 	if _, err := os.Stat(targetDir); !os.IsNotExist(err) {
@@ -119,17 +159,20 @@ func createNewProject(targetDir string) {
 
 	fmt.Println("Initializing Go Mobile build tools...")
 	runCmd("go", "install", "golang.org/x/mobile/cmd/gomobile@latest")
+	runCmd("go", "install", "golang.org/x/mobile/cmd/gobind@latest")
 	runCmd("gomobile", "init")
-	runCmd("go", "get", "-tool", "golang.org/x/mobile/cmd/gobind")
 
-	_ = os.MkdirAll(filepath.Join("native_plugins", "android"), 0755)
-	_ = os.MkdirAll(filepath.Join("native_plugins", "ios"), 0755)
+	if fileExists("go.mod") {
+		fmt.Println("Valid Go module context detected. Binding tool tracking dependencies...")
+		runCmd("go", "mod", "tidy")
+		runCmd("go", "get", "-tool", "golang.org/x/mobile/cmd/gobind")
+	} else {
+		fmt.Println("Notice: No go.mod found in target template context. Skipping localized tool tracking.")
+	}
 
 	fmt.Fprintf(os.Stdout, "=== Setup complete! Your project is ready in ./%s ===\n", targetDir)
 }
 
-// executeRefresh tracks configuration inputs, triggers compiler bindings,
-// and moves files to their respective target native build suites.
 func executeRefresh(platform string) {
 	if platform != "android" && platform != "ios" {
 		fmt.Fprintln(os.Stderr, "Error: Please specify a valid target platform: 'android' or 'ios'")
@@ -178,14 +221,123 @@ func executeRefresh(platform string) {
 			fmt.Println("No native plugins staged or directory empty. Skipping source injection.")
 		}
 
-		fmt.Fprintf(os.Stdout, "Done. Artifacts in %s:\n\n", outputPath)
-		fmt.Println("Open Android Studio and click on 'Build' or 'Run' to see result on your mobile.")
-
-		// Replaced shell-dependent 'ls -1' with a clean cross-platform directory scan
-		listDirectoryContents(outputPath)
+		fmt.Fprintf(os.Stdout, "Done. Artifacts inside %s synchronized cleanly.\n", outputPath)
 	} else {
 		fmt.Println("Notice: iOS pipeline synthesis engine is currently running standard validation checks.")
 	}
+}
+
+// executeBuild forces an environment refresh, identifies local compilation managers,
+// and triggers headless compiler steps based on your mode selection.
+func executeBuild(platform, mode string) {
+	mode = strings.ToLower(mode)
+	if mode != "debug" && mode != "release" && mode != "bundle" {
+		fmt.Fprintln(os.Stderr, "Error: Invalid build mode specified. Use 'debug' (APK), 'release' (APK), or 'bundle' (App Store AAB).")
+		os.Exit(1)
+	}
+
+	// Force baseline refresh to sync compiled Go bridges cleanly
+	executeRefresh(platform)
+
+	if platform == "android" {
+		androidDir := filepath.Join("native", "android")
+		if !dirExists(androidDir) {
+			fmt.Fprintln(os.Stderr, "Error: Native Android path root layout is missing. Run this inside a valid wailsm space.")
+			os.Exit(1)
+		}
+
+		gradleCmd := "./gradlew"
+		if isWindowsHost() {
+			gradleCmd = "gradlew.bat"
+		}
+
+		origWd, _ := os.Getwd()
+		_ = os.Chdir(androidDir)
+		defer func() { _ = os.Chdir(origWd) }()
+
+		if !fileExists(gradleCmd) {
+			fmt.Println("Notice: Local Gradle wrapper missing. Attempting global system fallback routine...")
+			gradleCmd = "gradle"
+			if _, err := exec.LookPath(gradleCmd); err != nil {
+				fmt.Fprintln(os.Stderr, "Error: Gradle compiler tools missing on host system.")
+				os.Exit(1)
+			}
+		}
+
+		// Dynamically assign target task profiles based on choice
+		var targetTask string
+		switch mode {
+		case "debug":
+			targetTask = "assembleDebug"
+			fmt.Println("=== Building Application Binary [Local Debug APK Mode] ===")
+		case "release":
+			targetTask = "assembleRelease"
+			fmt.Println("=== Building Application Binary [Unsigned Release APK Mode] ===")
+		case "bundle":
+			targetTask = "bundleRelease"
+			fmt.Println("=== Building Production Asset [Google Play App Bundle AAB Mode] ===")
+		}
+
+		fmt.Fprintf(os.Stdout, "Executing automated engine task: %s %s\n", gradleCmd, targetTask)
+		runCmd(gradleCmd, targetTask)
+
+		// Print exact path feedback so the developer knows where to grab the file
+		if mode == "bundle" {
+			fmt.Println("\nCompilation complete! Your production App Bundle is ready for upload:")
+			fmt.Println("👉 ./native/android/app/build/outputs/bundle/release/app-release.aab")
+		} else {
+			fmt.Println("\nCompilation complete! Your package is located under outputs/apk/")
+		}
+	} else {
+		fmt.Println("Notice: iOS pipeline build sequence is currently running verification architectures.")
+	}
+}
+
+// executeRun compiles the workspace codebase, evaluates connection bridges,
+// deploys the output binary, and fires up the activity framework instantly.
+func executeRun(platform string) {
+	if platform != "android" {
+		fmt.Println("Notice: Headless runner support is currently targeted to Android devices via ADB.")
+		return
+	}
+
+	// Step 1: Enforce code generation and debug compilation pass
+	executeBuild("android", "debug")
+
+	fmt.Println("=== Deploying Package over Android Debug Bridge (ADB) ===")
+	if _, err := exec.LookPath("adb"); err != nil {
+		fmt.Fprintln(os.Stderr, "Error: 'adb' executable tool found missing from system path bounds. Install Android Platform Tools to enable execution.")
+		os.Exit(1)
+	}
+
+	// Verify device connection integrity
+	devicesOut, _ := exec.Command("adb", "devices").Output()
+	lines := strings.Split(strings.TrimSpace(string(devicesOut)), "\n")
+	if len(lines) <= 1 || strings.TrimSpace(lines[1]) == "" {
+		fmt.Fprintln(os.Stderr, "Error: No active emulators or physical Android devices detected. Plug in your device and authorize USB Debugging.")
+		os.Exit(1)
+	}
+
+	apkPath := filepath.Join("native", "android", "app", "build", "outputs", "apk", "debug", "app-debug.apk")
+	if !fileExists(apkPath) {
+		fatal("Could not trace destination compiled application target binary", fmt.Errorf("missing asset: %s", apkPath))
+	}
+
+	fmt.Println("Streaming installation package directly down to device hardware space...")
+	runCmd("adb", "install", "-r", apkPath)
+
+	// Step 2: Extract package credentials from manifest to execute launch
+	manifestPath := filepath.Join("native", "android", "app", "src", "main", "AndroidManifest.xml")
+	packageName, launcherActivity, err := parseManifestDetails(manifestPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Notice: Could not parse manifest automation metadata: %v. Skipping launch step.\n", err)
+		return
+	}
+
+	targetComponent := packageName + "/" + launcherActivity
+	fmt.Fprintf(os.Stdout, "Launching core runtime context interface instance: %s\n", targetComponent)
+	runCmd("adb", "shell", "am", "start", "-n", targetComponent)
+	fmt.Println("=== Application initialization complete! Native logs are streaming through logcat ===")
 }
 
 // managePlugin executes mutations across go.mod dependencies and safely
