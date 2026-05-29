@@ -3,14 +3,22 @@ package main
 import (
 	"archive/zip"
 	"bufio"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
+
+// isWindowsHost checks the compile-time operating system target.
+// It returns true if the binary is running on a native Windows machine environment.
+func isWindowsHost() bool {
+	return runtime.GOOS == "windows"
+}
 
 // parseAndroidINI reads system instructions from local .ini configuration matrices.
 // It automatically normalizes Windows-style trailing carriage lines (\r\n).
@@ -54,6 +62,57 @@ func parseAndroidINI() {
 			CleanOutput = val
 		}
 	}
+}
+
+// parseManifestDetails extracts target identity metrics out of your XML asset maps safely.
+func parseManifestDetails(path string) (string, string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return "", "", err
+	}
+	defer file.Close()
+
+	bytes, _ := io.ReadAll(file)
+	var manifest AndroidManifest
+	if err := xml.Unmarshal(bytes, &manifest); err != nil {
+		return "", "", err
+	}
+
+	pkg := manifest.PackageName
+	launcher := ""
+
+	// Identify the explicit activity registration holding the LAUNCHER intent filter category flag
+	for _, act := range manifest.Application.Activities {
+		isLauncher := false
+		for _, filter := range act.IntentFilters {
+			hasMain := false
+			hasLaunch := false
+			for _, action := range filter.Actions {
+				if action.Name == "android.intent.action.MAIN" {
+					hasMain = true
+				}
+			}
+			for _, cat := range filter.Categories {
+				if cat.Name == "android.intent.category.LAUNCHER" {
+					hasLaunch = true
+				}
+			}
+			if hasMain && hasLaunch {
+				isLauncher = true
+				break
+			}
+		}
+		if isLauncher {
+			launcher = act.Name
+			break
+		}
+	}
+
+	if pkg == "" || launcher == "" {
+		return pkg, launcher, fmt.Errorf("failed tracking valid launcher details within schema layout metrics")
+	}
+
+	return pkg, launcher, nil
 }
 
 // runCmd spawns an OS sub-process linking stdout/stderr pipelines directly to the terminal shell.
