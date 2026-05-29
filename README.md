@@ -19,12 +19,14 @@ Gradle support: `Gradle 9.2.1` by default. You can change the version to your Gr
 
 ## Quick links
 
-1. [Install & Build](docs/INSTALL.md)
-2. [CLI reference](docs/CLI.md)
-3. [Contributing](docs/CONTRIBUTING.md)
-4. [Plugin docs](plugins/PLUGINS.md)
-5. [Android plugin guide](plugins/PLUGINS_ANDROID.md)
-6. [Example Wails Mobile app](_examples/helloworld/README.md)
+<div style="display:flex;flex-wrap:wrap;gap:10px;">
+  <a href="docs/INSTALL.md" style="display:inline-block;padding:10px 16px;background:#2d6cdf;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;">Install &amp; Build</a>
+  <a href="docs/CLI.md" style="display:inline-block;padding:10px 16px;background:#2d6cdf;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;">CLI reference</a>
+  <a href="docs/CONTRIBUTING.md" style="display:inline-block;padding:10px 16px;background:#2d6cdf;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;">Contributing</a>
+  <a href="plugins/PLUGINS.md" style="display:inline-block;padding:10px 16px;background:#2d6cdf;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;">Plugin docs</a>
+  <a href="plugins/PLUGINS_ANDROID.md" style="display:inline-block;padding:10px 16px;background:#2d6cdf;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;">Android plugin guide</a>
+  <a href="_examples/helloworld/README.md" style="display:inline-block;padding:10px 16px;background:#2d6cdf;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;">Example Wails Mobile app</a>
+</div>
 
 ## Requirements
 
