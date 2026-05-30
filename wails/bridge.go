@@ -32,14 +32,14 @@ func SetGlobalApp(app *Application) {
 	globalAppInstance = app
 }
 
-// MobileBridge is a clean, dedicated wrapper struct that gobind can parse into a Java Class.
+// MobileBridge is a dedicated wrapper struct that gobind can parse into a Java Class.
 type MobileBridge struct{}
 
 func NewMobileBridge() *MobileBridge {
 	return &MobileBridge{}
 }
 
-// CallGoBackend provides a clean, class-mapped method for the JNI layer to invoke.
+// CallGoBackend provides a class-mapped method for the JNI layer to invoke.
 func (b *MobileBridge) CallGoBackend(methodKey string, jsonArgsPayload string) string {
 	if globalAppInstance == nil {
 		return `{"error": "Application core runtime context not active"}`

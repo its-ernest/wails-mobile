@@ -46,7 +46,7 @@ func StartApplication() string {
 		Name:   "Wails Mobile",
 		Assets: assets,
 		Bind: []interface{}{
-			helloService,
+			helloService, // Always bind the main application service
 			permPlugin,
 			wmPlugin,
 			notifyPlugin,

@@ -141,7 +141,7 @@ func (p *WorkManagerPlugin) IsEnqueued(taskKey string) (bool, error) {
 		return false, err
 	}
 	if resp.Error != "" {
-		return false, fmt.Errorf(resp.Error)
+		return false, fmt.Errorf("%s", resp.Error)
 	}
 	return resp.Enqueued, nil
 }

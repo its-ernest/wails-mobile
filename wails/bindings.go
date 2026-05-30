@@ -46,7 +46,7 @@ func (a *Application) parseBindings() error {
 			// Generate the clean lookup key (e.g., "AcademicService.GetDashboardStats")
 			bindingKey := fmt.Sprintf("%s.%s", structName, methodName)
 
-			// Store our data securely inside our generic methods map using the unexported type
+			// Store data securely inside generic methods map using the unexported type
 			a.methods[bindingKey] = boundMethod{
 				ParamTypes:  paramTypes,
 				MethodValue: method,

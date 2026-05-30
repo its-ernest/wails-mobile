@@ -8,7 +8,7 @@ import (
 
 // InvokeCall parses incoming payloads from the WebView container and executes the matching Go routine.
 func (a *Application) InvokeCall(methodKey string, rawArgs []json.RawMessage) (interface{}, error) {
-	// Pull the generic wrapper and cast it back to our internal unexported boundMethod structure
+	// Pull the generic wrapper and cast it back to the internal unexported boundMethod structure
 	rawBound, exists := a.methods[methodKey]
 	if !exists {
 		return nil, fmt.Errorf("method identity '%s' not registered with application", methodKey)
@@ -25,7 +25,7 @@ func (a *Application) InvokeCall(methodKey string, rawArgs []json.RawMessage) (i
 	for i, argRaw := range rawArgs {
 		targetType := bound.ParamTypes[i]
 
-		// Create a pointer instance to unmarshal raw bytes into safely
+		// Create a pointer instance to unmarshal raw bytes into
 		allocatedPtr := reflect.New(targetType)
 		if err := json.Unmarshal(argRaw, allocatedPtr.Interface()); err != nil {
 			return nil, fmt.Errorf("failed to parse parameter %d to type %s: %w", i, targetType, err)
