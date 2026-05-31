@@ -1,0 +1,236 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 55;
+	objects = {
+		111111111111111111111111 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1440;
+			};
+			buildConfigurationList = 888888888888888888888888 /* Build configuration list for PBXProject */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 333333333333333333333333;
+			productRefGroup = 999999999999999999999999;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				222222222222222222222222 /* WailsMobile */,
+			);
+		};
+
+		222222222222222222222222 /* WailsMobile */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CCCCCCCC0000000000000000 /* Build configuration list for PBXNativeTarget */;
+			buildPhases = (
+				666666666666666666666666 /* Sources */,
+			);
+			buildRules = ();
+			dependencies = ();
+			name = WailsMobile;
+			productName = WailsMobile;
+			productReference = 555555555555555555555555 /* WailsMobile.app */;
+			productType = "com.apple.product-type.application";
+		};
+
+		333333333333333333333333 = {
+			isa = PBXGroup;
+			children = (
+				444444444444444444444444 /* WailsApplication.swift */, 
+				444444444444444444444445 /* WailsWebViewController.swift */, 
+				444444444444444444444446 /* WailsPlugin.swift */, 
+				444444444444444444444447 /* WailsURLSchemeHandler.swift */, 
+				444444444444444444444448 /* ExamplePlugin.swift */, 
+				666666666666666666666667 /* Info.plist */,
+			);
+			sourceTree = "<group>";
+		};
+
+		444444444444444444444444 /* WailsApplication.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			name = WailsApplication.swift;
+			path = WailsApplication.swift;
+			sourceTree = "<group>";
+		};
+		444444444444444444444445 /* WailsWebViewController.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			name = WailsWebViewController.swift;
+			path = WailsWebViewController.swift;
+			sourceTree = "<group>";
+		};
+		444444444444444444444446 /* WailsPlugin.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			name = WailsPlugin.swift;
+			path = WailsPlugin.swift;
+			sourceTree = "<group>";
+		};
+		444444444444444444444447 /* WailsURLSchemeHandler.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			name = WailsURLSchemeHandler.swift;
+			path = WailsURLSchemeHandler.swift;
+			sourceTree = "<group>";
+		};
+		444444444444444444444448 /* ExamplePlugin.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			name = ExamplePlugin.swift;
+			path = ExamplePlugin.swift;
+			sourceTree = "<group>";
+		};
+		666666666666666666666667 /* Info.plist */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.xml;
+			name = Info.plist;
+			path = Info.plist;
+			sourceTree = "<group>";
+		};
+		555555555555555555555555 /* WailsMobile.app */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.application;
+			name = WailsMobile.app;
+			path = WailsMobile.app;
+			sourceTree = "BUILT_PRODUCTS_DIR";
+		};
+
+			999999999999999999999999 = {
+				isa = PBXGroup;
+				children = (
+					555555555555555555555555 /* WailsMobile.app */,
+				);
+				sourceTree = "<group>";
+			};
+
+		666666666666666666666666 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				777777777777777777777770 /* WailsApplication.swift in Sources */, 
+				777777777777777777777771 /* WailsWebViewController.swift in Sources */, 
+				777777777777777777777772 /* WailsPlugin.swift in Sources */, 
+				777777777777777777777773 /* WailsURLSchemeHandler.swift in Sources */, 
+				777777777777777777777774 /* ExamplePlugin.swift in Sources */, 
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+
+		777777777777777777777770 /* WailsApplication.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 444444444444444444444444 /* WailsApplication.swift */;
+		};
+		777777777777777777777771 /* WailsWebViewController.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 444444444444444444444445 /* WailsWebViewController.swift */;
+		};
+		777777777777777777777772 /* WailsPlugin.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 444444444444444444444446 /* WailsPlugin.swift */;
+		};
+		777777777777777777777773 /* WailsURLSchemeHandler.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 444444444444444444444447 /* WailsURLSchemeHandler.swift */;
+		};
+		777777777777777777777774 /* ExamplePlugin.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 444444444444444444444448 /* ExamplePlugin.swift */;
+		};
+
+		888888888888888888888888 /* Build configuration list for PBXProject */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AAAAAAAA0000000000000000 /* Debug */,
+				AAAAAAAA0000000000000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+
+		AAAAAAA0000000000000000 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				SDKROOT = iphoneos;
+				INFOPLIST_FILE = Info.plist;
+				SWIFT_VERSION = 5.9;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_BITCODE = NO;
+				SUPPORTED_PLATFORMS = iphoneos;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+			};
+			name = Debug;
+		};
+
+		AAAAAAA0000000000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				SDKROOT = iphoneos;
+				INFOPLIST_FILE = Info.plist;
+				SWIFT_VERSION = 5.9;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_BITCODE = NO;
+				SUPPORTED_PLATFORMS = iphoneos;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+			};
+			name = Release;
+		};
+
+		AAAAAAAA0000000000000000 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				SDKROOT = iphoneos;
+				INFOPLIST_FILE = Info.plist;
+				SWIFT_VERSION = 5.9;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_BITCODE = NO;
+				SUPPORTED_PLATFORMS = iphoneos;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+			};
+			name = Debug;
+		};
+
+		AAAAAAAA0000000000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				SDKROOT = iphoneos;
+				INFOPLIST_FILE = Info.plist;
+				SWIFT_VERSION = 5.9;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_BITCODE = NO;
+				SUPPORTED_PLATFORMS = iphoneos;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+			};
+			name = Release;
+		};
+
+		CCCCCCCC0000000000000000 /* Build configuration list for PBXNativeTarget */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AAAAAAAA0000000000000000 /* Debug */,
+				AAAAAAAA0000000000000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+	};
+	rootObject = 111111111111111111111111;
+}
