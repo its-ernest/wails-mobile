@@ -4,7 +4,7 @@ Wails Mobile is an early port of Go v3 implementation to support mobile devies.
 
 Gradle support: `Gradle 9.2.1` by default. You can change the version to your Gradle version
 
-⚠️ **Important Note:** iOS support in the current version of this repository is entirely vibe-coded due to lack of support from the iOS developer community. Contributions translating our Java architecture into Swift wrappers are highly welcome!
+⚠️ **Important Note:** iOS support is currently entirely vibe-coded with insufficient infrastructure to test. Contributions translating our Java architecture into Swift wrappers are highly welcome!
 
 <p>
 	<img alt="Example UI" src="./hello-example.jpg" width="200" style="border-radius:6px;"/>
@@ -32,8 +32,8 @@ Gradle support: `Gradle 9.2.1` by default. You can change the version to your Gr
 1. [Install & Build](docs/INSTALL.md)
 2. [CLI reference](docs/CLI.md)
 3. [Contributing](docs/CONTRIBUTING.md)
-4. [Plugin docs](plugins/PLUGINS.md)
-5. [Android plugin guide](plugins/PLUGINS_ANDROID.md)
+4. [Plugin docs](docs/PLUGINS.md)
+5. [Android plugin guide](docs/PLUGINS_ANDROID.md)
 6. [Example Wails Mobile app](_examples/helloworld/README.md)
 7. [Benchmarks](docs/BENCHMARKS.md)
 

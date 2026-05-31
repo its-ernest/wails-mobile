@@ -16,7 +16,7 @@ const (
 	// RepoURL is the upstream repository hosting core templates and codebases.
 	RepoURL = "https://github.com/its-ernest/wails-mobile"
 	// Version matches the designated framework release tag.
-	Version = "v1.2.0"
+	Version = "v1.4.0"
 	// ReleaseAsset is the file package downloaded to bootstrap fresh instances.
 	ReleaseAsset = "template.zip"
 	// DownloadURL maps directly to the compiled archive within GitHub Releases.

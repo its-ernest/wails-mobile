@@ -7,6 +7,7 @@ This document contains the installation, bootstrapping, build and uninstall step
 - Go 1.24+
 - Android SDK and Android NDK installed (Android Studio recommended)
 - `git`, `curl`
+- **For less mess, do not alter the default location for Android SDK**
 
 ## CLI installation
 
