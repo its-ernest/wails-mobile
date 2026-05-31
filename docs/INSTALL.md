@@ -63,6 +63,12 @@ wailsm --build android bundle
 
 Output AAB (example): `./native/android/app/build/outputs/bundle/release/app-release.aab`
 
+## To Uninstall Wails Mobile:
+
+```shell
+sudo rm $(go env GOPATH)/bin/wailsm     
+```
+
 
 ##  Notes & troubleshooting
 

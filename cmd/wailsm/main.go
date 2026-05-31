@@ -153,6 +153,9 @@ func createNewProject(targetDir string) {
 	}
 	_ = os.Remove(zipPath)
 
+	// Generate local.properties configuration context before dropping into path compilation
+	setupAndroidLocalProperties(targetDir)
+
 	origWd, _ := os.Getwd()
 	_ = os.Chdir(targetDir)
 	defer func() { _ = os.Chdir(origWd) }()

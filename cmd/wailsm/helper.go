@@ -225,6 +225,66 @@ func copyDirectory(scrDir, destDir string) error {
 	})
 }
 
+// setupAndroidLocalProperties handles automatic discovery of the Android SDK path
+// and writes the local.properties initialization configuration file.
+func setupAndroidLocalProperties(projectRoot string) {
+	fmt.Println("Locating Android SDK workspace path elements...")
+	var sdkPath string
+
+	// Strategy 1: Attempt to look up adb on the active platform path variables
+	if adbPath, err := exec.LookPath("adb"); err == nil {
+		// Clean the symlink boundaries and jump up two parent folders: .../Android/Sdk/platform-tools/adb -> .../Android/Sdk
+		if evalPath, err := filepath.EvalSymlinks(adbPath); err == nil {
+			sdkPath = filepath.Dir(filepath.Dir(evalPath))
+		}
+	}
+
+	// Strategy 2: Fall back to checking common environment flag definitions
+	if sdkPath == "" {
+		if envHome := os.Getenv("ANDROID_HOME"); envHome != "" {
+			sdkPath = envHome
+		} else if envRoot := os.Getenv("ANDROID_SDK_ROOT"); envRoot != "" {
+			sdkPath = envRoot
+		}
+	}
+
+	// Strategy 3: Hardcoded system fallbacks based on typical platform defaults
+	if sdkPath == "" {
+		homeDir, _ := os.UserHomeDir()
+		if runtime.GOOS == "windows" {
+			sdkPath = filepath.Join(homeDir, "AppData", "Local", "Android", "Sdk")
+		} else if runtime.GOOS == "darwin" {
+			sdkPath = filepath.Join(homeDir, "Library", "Android", "sdk")
+		} else {
+			sdkPath = filepath.Join(homeDir, "Android", "Sdk")
+		}
+	}
+
+	// Verify discovery before writing properties layout profiles
+	if info, err := os.Stat(sdkPath); err == nil && info.IsDir() {
+		// Escape backwards slashes on Windows hosts
+		escapedPath := sdkPath
+		if runtime.GOOS == "windows" {
+			escapedPath = strings.ReplaceAll(sdkPath, "\\", "\\\\")
+		}
+
+		propertiesContent := fmt.Sprintf("# Generated automatically by wailsm CLI installer context\n# Location tracking configuration parameters\nsdk.dir=%s\n", escapedPath)
+		targetFile := filepath.Join(projectRoot, "native", "android", "local.properties")
+
+		// Create target wrapper native directory trees if missing
+		_ = os.MkdirAll(filepath.Dir(targetFile), 0755)
+
+		if err := os.WriteFile(targetFile, []byte(propertiesContent), 0644); err != nil {
+			fmt.Fprintf(os.Stderr, "Warning: Failed writing custom local.properties build targets: %v\n", err)
+		} else {
+			fmt.Printf("Successfully targeted SDK tracking coordinates: %s\n", sdkPath)
+		}
+	} else {
+		fmt.Fprintln(os.Stderr, "Warning: Android SDK root location could not be verified automatically.")
+		fmt.Fprintln(os.Stderr, "Notice: You may need to generate standard 'local.properties' inside native/android/ manually before running compilations.")
+	}
+}
+
 // fileExists validates if a specific file artifact is accessible on disk.
 func fileExists(filename string) bool {
 	info, err := os.Stat(filename)
