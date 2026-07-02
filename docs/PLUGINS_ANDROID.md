@@ -105,3 +105,13 @@ Wailsmobile.handleNativeAction("myplugin:callback", payload);
 *   **Permissions**: Use the existing `PermissionsPlugin` to check/request neccessary permissions before your plugin executes.
 *   **Main Thread**: `handleAction` is often called on a background bridge thread. If you need to touch the UI, use `new Handler(Looper.getMainLooper()).post(...)`.
 *   **JSON Parsing**: Use `org.json.JSONObject` to parse `jsonArgsPayload`.
+
+---
+
+## 🛠️ Background Services & Daemons
+
+If your plugin requires a persistent background presence, you should implement a `Service`.
+
+1.  **Foreground Service**: Required for persistent background logic on modern Android (Oreo+). You must show a notification.
+2.  **Manifest Registration**: All services must be declared in `AndroidManifest.xml`.
+3.  **Permissions**: Request `FOREGROUND_SERVICE` and specific types (e.g., `specialUse` for custom Go logic) in the manifest.

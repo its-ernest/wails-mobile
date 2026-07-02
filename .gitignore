@@ -47,3 +47,7 @@ pkg/
 **/native/android/local.properties
 **/native/android/gradle
 **/native/android/app/src/main/java/com/wailspackage
+
+# Temporary files
+temp/
+*.xip

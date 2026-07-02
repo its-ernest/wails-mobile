@@ -7,12 +7,16 @@ import androidx.work.Data;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import com.wailsplugin.WailsPlugin;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -43,6 +47,7 @@ public class WorkManagerPlugin implements WailsPlugin {
                 OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(WailsBackgroundWorker.class)
                         .setInputData(inputData)
                         .setConstraints(constraints)
+                        .addTag(taskKey)
                         .build();
 
                 WorkManager.getInstance(mContext).enqueue(request);
@@ -57,10 +62,29 @@ public class WorkManagerPlugin implements WailsPlugin {
                         WailsBackgroundWorker.class, intervalMinutes, TimeUnit.MINUTES)
                         .setInputData(inputData)
                         .setConstraints(constraints)
+                        .addTag(taskKey)
                         .build();
 
                 WorkManager.getInstance(mContext).enqueue(request);
                 return "{\"status\":\"periodic_enqueued\",\"id\":\"" + request.getId().toString() + "\"}";
+            }
+
+            if ("isEnqueued".equals(action)) {
+                try {
+                    List<WorkInfo> workInfos = WorkManager.getInstance(mContext).getWorkInfosByTag(taskKey).get();
+                    boolean enqueued = false;
+                    for (WorkInfo info : workInfos) {
+                        if (info.getState() == WorkInfo.State.ENQUEUED || 
+                            info.getState() == WorkInfo.State.RUNNING || 
+                            info.getState() == WorkInfo.State.BLOCKED) {
+                            enqueued = true;
+                            break;
+                        }
+                    }
+                    return "{\"enqueued\":" + enqueued + "}";
+                } catch (ExecutionException | InterruptedException e) {
+                    return "{\"error\":\"" + e.getMessage() + "\"}";
+                }
             }
 
             if ("cancelAll".equals(action)) {

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/its-ernest/wails-mobile/plugins/biometric"
+	"github.com/its-ernest/wails-mobile/plugins/daemon"
 	"github.com/its-ernest/wails-mobile/plugins/filepicker"
 	"github.com/its-ernest/wails-mobile/plugins/logger"
 	"github.com/its-ernest/wails-mobile/plugins/notification"
@@ -24,6 +25,7 @@ var (
 	notifyPlugin    = notification.NewPlugin()
 	biometricPlugin = biometric.NewPlugin()
 	filePicker      = filepicker.NewPlugin()
+	daemonPlugin    = daemon.NewPlugin()
 	log             = logger.NewPlugin("[Wails Mobile]")
 )
 
@@ -52,6 +54,7 @@ func StartApplication() string {
 			notifyPlugin,
 			biometricPlugin,
 			filePicker,
+			daemonPlugin,
 		},
 		OnStart: func(app *wails.Application) error {
 			// Initialize plugins
@@ -71,6 +74,9 @@ func StartApplication() string {
 				return err
 			}
 			if err := filePicker.Init(app); err != nil {
+				return err
+			}
+			if err := daemonPlugin.Init(app); err != nil {
 				return err
 			}
 

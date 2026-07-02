@@ -45,7 +45,7 @@ func (p *MyPlugin) PerformAction(data string) string {
 The native implementation handles the actual platform API calls. It must implement the `WailsPlugin` interface.
 
 *   [**Android Implementation Guide (Java/Kotlin)**](./PLUGINS_ANDROID.md)
-*   *iOS Implementation Guide (Swift/Obj-C) - Coming Soon*
+*   [**iOS Implementation Guide (Swift/Obj-C)**](./PLUGINS_IOS.md) (WIP - Experimental)
 
 ### 3. The Frontend Integration (`app.js`)
 The frontend interacts with the plugin **strictly through the Go layer**.
