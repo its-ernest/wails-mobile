@@ -2,7 +2,7 @@
 
 ### NB Latest: This project has been ported to [sweet-juice/core](https://github.com/sweet-juice/core) Looking for the stable and actively-maintained version of this project?
 
-Wails Mobile ~~is was an early port of Go v3 implementation to support mobile devies.
+Wails Mobile ~~is~~ was an early port of Go v3 implementation to support mobile devies.
 
 Gradle support: `Gradle 9.2.1` by default. You can change the version to your Gradle version
 
