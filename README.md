@@ -1,10 +1,12 @@
 # Wails Mobile
 
-Wails Mobile is an early port of Go v3 implementation to support mobile devies.
+### NB Latest: This project has been ported to [sweet-juice/core](https://github.com/sweet-juice/core) Looking for the stable and actively-maintained version of this project?
+
+Wails Mobile ~~is was an early port of Go v3 implementation to support mobile devies.
 
 Gradle support: `Gradle 9.2.1` by default. You can change the version to your Gradle version
 
-⚠️ **Important Note:** iOS support is currently entirely vibe-coded with insufficient infrastructure to test. Contributions translating our Java architecture into Swift wrappers are highly welcome!
+⚠️ **Important Note:** iOS support is currently experimental and not ripened as Android support!
 
 <p>
 	<img alt="Example UI" src="./hello-example.jpg" width="200" style="border-radius:6px;"/>
